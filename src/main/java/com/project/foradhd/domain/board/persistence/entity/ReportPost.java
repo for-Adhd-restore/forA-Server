@@ -28,6 +28,7 @@ public class ReportPost extends BaseTimeEntity {
     private Post post;
 
     @Column(name = "report_type")
+    @Enumerated(EnumType.STRING)
     private Report reportType;
 
 }
