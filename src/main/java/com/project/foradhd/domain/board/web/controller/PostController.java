@@ -1,12 +1,14 @@
 package com.project.foradhd.domain.board.web.controller;
 
 import com.project.foradhd.domain.board.business.service.PostLikeFilterService;
+import com.project.foradhd.domain.board.business.service.PostReportService;
 import com.project.foradhd.domain.board.business.service.PostScrapFilterService;
 import com.project.foradhd.domain.board.business.service.PostSearchHistoryService;
 import com.project.foradhd.domain.board.business.service.PostService;
 import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.persistence.entity.PostScrapFilter;
 import com.project.foradhd.domain.board.persistence.enums.Category;
+import com.project.foradhd.domain.board.persistence.enums.Report;
 import com.project.foradhd.domain.board.persistence.enums.SortOption;
 import com.project.foradhd.domain.board.web.dto.request.PostRequestDto;
 import com.project.foradhd.domain.board.web.dto.response.PostListResponseDto;
@@ -39,6 +41,7 @@ public class PostController {
     private final PostLikeFilterService postLikeFilterService;
     private final PostSearchHistoryService postSearchHistoryService;
     private final UserService userService;
+    private final PostReportService postReportService;
 
     // 게시글 개별 조회 api
     @GetMapping("/{postId}")
@@ -278,5 +281,13 @@ public class PostController {
     public ResponseEntity<Void> deleteSearchTermById(@PathVariable Long id) {
         postSearchHistoryService.deleteSearchTermById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // 게시글 신고 API
+    @PostMapping("report")
+    public ResponseEntity<Void> reportPost(@RequestBody Long postId,
+                                           @RequestBody Report reportType){
+        postReportService.postReport(postId, reportType);
+        return ResponseEntity.ok().build();
     }
 }
