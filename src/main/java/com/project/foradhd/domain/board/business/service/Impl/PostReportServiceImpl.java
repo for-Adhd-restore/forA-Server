@@ -6,13 +6,17 @@ import static com.project.foradhd.global.exception.ErrorCode.NOT_FOUND_USER;
 import com.project.foradhd.domain.board.business.service.PostReportService;
 import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.persistence.entity.ReportPost;
+import com.project.foradhd.domain.board.persistence.enums.HandleReport;
 import com.project.foradhd.domain.board.persistence.enums.Report;
 import com.project.foradhd.domain.board.persistence.repository.PostRepository;
 import com.project.foradhd.domain.board.persistence.repository.ReportPostRepository;
 import com.project.foradhd.domain.user.persistence.entity.User;
 import com.project.foradhd.domain.user.persistence.repository.UserRepository;
 import com.project.foradhd.global.exception.BusinessException;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +46,35 @@ public class PostReportServiceImpl implements PostReportService {
 
         // 레포지토리에 저장
         reportPostRepository.save(reportPost);
+    }
 
+    @Override
+    @Transactional
+    public void handleReport(String email, Long postId, HandleReport handleReportType){
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
+
+        User user = userRepository.findByEmail(post.getUser().getId())
+                .orElseThrow(() -> new BusinessException(NOT_FOUND_USER));
+
+        user.updateUserStatus(handleReportType);
+
+        userRepository.save(user);
+    }
+
+    // 2일 뒤 자동으로 상태를 CLEAN으로 변경
+    @Scheduled(fixedRate = 24 * 60 * 60 * 1000) // 매일 한 번씩 실행
+    public void resetUserStatusToClean() {
+        LocalDateTime now = LocalDateTime.now();
+
+        // 2일 정지된 유저만 검색해서 가져오기
+        List<User> users = userRepository.findByStatus(HandleReport.DAY_2_PAUSE);
+
+        for (User user : users) {
+            if (user.getLastModifiedAt().plusDays(2).isBefore(now)) {
+                user.updateUserStatus(HandleReport.CLEAN); // 2일이 지난 유저의 상태를 CLEAN으로 변경
+                userRepository.save(user);
+            }
+        }
     }
 }
