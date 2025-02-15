@@ -8,6 +8,7 @@ import com.project.foradhd.domain.board.business.service.PostService;
 import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.persistence.entity.PostScrapFilter;
 import com.project.foradhd.domain.board.persistence.enums.Category;
+import com.project.foradhd.domain.board.persistence.enums.HandleReport;
 import com.project.foradhd.domain.board.persistence.enums.Report;
 import com.project.foradhd.domain.board.persistence.enums.SortOption;
 import com.project.foradhd.domain.board.web.dto.request.PostRequestDto;
@@ -20,6 +21,7 @@ import com.project.foradhd.domain.board.web.mapper.PostScrapFilterMapper;
 import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.global.AuthUserId;
 import com.project.foradhd.global.paging.web.dto.response.PagingResponse;
+import jdk.incubator.foreign.ResourceScope.Handle;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -288,6 +290,15 @@ public class PostController {
     public ResponseEntity<Void> reportPost(@RequestBody Long postId,
                                            @RequestBody Report reportType){
         postReportService.postReport(postId, reportType);
+        return ResponseEntity.ok().build();
+    }
+
+    // 신고 처리 API
+    @PostMapping("handleReport")
+    public ResponseEntity<Void> handleReport(@RequestBody String email,
+                                             @RequestBody Long postId,
+                                             @RequestBody HandleReport handleReportType){
+        postReportService.handleReport(email, postId, handleReportType);
         return ResponseEntity.ok().build();
     }
 }
