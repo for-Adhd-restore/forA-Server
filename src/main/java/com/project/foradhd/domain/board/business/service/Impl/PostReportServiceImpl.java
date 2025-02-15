@@ -44,7 +44,6 @@ public class PostReportServiceImpl implements PostReportService {
                 .reportType(reportType)
                 .build();
 
-        // 레포지토리에 저장
         reportPostRepository.save(reportPost);
     }
 
