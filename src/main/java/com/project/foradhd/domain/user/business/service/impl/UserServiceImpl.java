@@ -2,10 +2,12 @@ package com.project.foradhd.domain.user.business.service.impl;
 
 import com.project.foradhd.domain.user.business.dto.in.*;
 import com.project.foradhd.domain.user.business.dto.out.UserProfileDetailsData;
+import com.project.foradhd.domain.user.business.dto.out.UserRoleData;
 import com.project.foradhd.domain.user.business.service.UserAuthInfoService;
 import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.domain.user.persistence.entity.*;
 import com.project.foradhd.domain.user.persistence.enums.Provider;
+import com.project.foradhd.domain.user.persistence.enums.Role;
 import com.project.foradhd.domain.user.persistence.repository.*;
 import com.project.foradhd.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -304,4 +306,13 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(NOT_FOUND_PUSH_NOTIFICATION_APPROVAL);
         }
     }
+
+    @Override
+    public UserRoleData getUserRole(String userId){
+        User user = getUser(userId);
+        return UserRoleData.builder()
+                .role(user.getRole())
+                .build();
+    }
+
 }
