@@ -27,7 +27,6 @@ public class PostReportServiceImpl implements PostReportService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final ReportPostRepository reportPostRepository;
-    private final PostReportService postReportService;
 
     @Override
     @Transactional
@@ -35,16 +34,20 @@ public class PostReportServiceImpl implements PostReportService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
 
-        User user = userRepository.findById(post.getUser().getId())
-                .orElseThrow(() -> new BusinessException(NOT_FOUND_USER));
+        ReportPost reportPost = reportPostRepository.findByPostAndReportType(post, reportType)
+                .orElse(null);
 
-        ReportPost reportPost = ReportPost.builder()
-                .user(user)
-                .post(post)
-                .reportType(reportType)
-                .build();
-
-        reportPostRepository.save(reportPost);
+        if (reportPost != null){
+            // 기존 신고 유형이 있으면 count 증가
+            reportPost.increaseCount();
+        } else {
+            // 없으면 새롭게 신고 생성
+            reportPost = ReportPost.builder()
+                    .post(post)
+                    .reportType(reportType)
+                    .build();
+            reportPostRepository.save(reportPost);
+        }
     }
 
     @Override

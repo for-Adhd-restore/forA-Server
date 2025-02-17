@@ -7,7 +7,7 @@ import lombok.*;
 import com.project.foradhd.domain.user.persistence.entity.User;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Entity
@@ -20,15 +20,18 @@ public class ReportPost extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", referencedColumnName = "post_id", nullable = false)
+    @JoinColumn(name = "post_id")
     private Post post;
 
-    @Column(name = "report_type")
+    @Column(name = "report_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private Report reportType;
 
+    @Builder.Default
+    @Column(name = "report_count", nullable = false)
+    private int reportCount = 1;
+
+    public void increaseCount(){
+        this.reportCount += 1;
+    }
 }
