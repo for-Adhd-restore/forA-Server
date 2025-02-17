@@ -1,7 +1,5 @@
 package com.project.foradhd.domain.user.web.controller;
 
-import com.project.foradhd.domain.user.business.dto.out.UserRoleData;
-import com.project.foradhd.domain.user.web.dto.response.UserRoleResponse;
 import com.project.foradhd.domain.user.business.dto.in.*;
 import com.project.foradhd.domain.user.business.dto.out.UserTokenData;
 import com.project.foradhd.domain.user.business.dto.out.UserProfileDetailsData;
@@ -45,13 +43,6 @@ public class UserController {
     public ResponseEntity<UserProfileDetailsResponse> getUserProfileDetails(@AuthUserId String userId) {
         UserProfileDetailsData userProfileDetailsData = userService.getUserProfileDetails(userId);
         UserProfileDetailsResponse response = userMapper.toUserProfileDetailsResponse(userProfileDetailsData);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/role")
-    public ResponseEntity<UserRoleResponse> getUserRole(@AuthUserId String userId) {
-        UserRoleData userRoleData = userService.getUserRole(userId);
-        UserRoleResponse response = userMapper.toUserRoleResponse(userRoleData);
         return ResponseEntity.ok(response);
     }
 

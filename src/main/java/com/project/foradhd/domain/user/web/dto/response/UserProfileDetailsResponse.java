@@ -1,6 +1,7 @@
 package com.project.foradhd.domain.user.web.dto.response;
 
 import com.project.foradhd.domain.user.persistence.enums.ForAdhdType;
+import com.project.foradhd.domain.user.persistence.enums.Role;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,4 +16,6 @@ public class UserProfileDetailsResponse {
     private String profileImage;
 
     private ForAdhdType forAdhdType;
+
+    private Role userRole;
 }

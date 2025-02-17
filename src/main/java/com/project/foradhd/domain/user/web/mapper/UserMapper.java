@@ -34,7 +34,7 @@ public interface UserMapper {
         @Mapping(target = "email", source = "userProfile.user.email"),
         @Mapping(target = "nickname", source = "userProfile.nickname"),
         @Mapping(target = "profileImage", source = "userProfile.profileImage"),
-        @Mapping(target = "forAdhdType", source = "userProfile.forAdhdType")
+        @Mapping(target = "forAdhdType", source = "userProfile.forAdhdType"),
     })
     UserProfileDetailsResponse toUserProfileDetailsResponse(UserProfileDetailsData userProfileDetailsData);
 
@@ -200,5 +200,4 @@ public interface UserMapper {
 
     EmailAuthValidationResponse toEmailAuthValidationResponse(UserTokenData userTokenData);
 
-    UserRoleResponse toUserRoleResponse(UserRoleData userRoleData);
 }

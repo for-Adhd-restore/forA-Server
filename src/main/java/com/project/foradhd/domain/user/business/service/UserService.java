@@ -11,6 +11,7 @@ import com.project.foradhd.domain.user.business.dto.out.UserRoleData;
 import com.project.foradhd.domain.user.persistence.entity.*;
 import com.project.foradhd.domain.user.persistence.enums.Provider;
 
+import com.project.foradhd.domain.user.persistence.enums.Role;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,6 +72,4 @@ public interface UserService {
     void validateTermsApprovals(List<UserTermsApproval> userTermsApprovals);
 
     void validatePushNotificationApprovals(List<UserPushNotificationApproval> userPushNotificationApprovals);
-
-    UserRoleData getUserRole(String userId);
 }

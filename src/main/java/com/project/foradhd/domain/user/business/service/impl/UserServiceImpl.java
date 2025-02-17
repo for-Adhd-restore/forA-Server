@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService {
         UserProfile userProfile = getUserProfileFetch(userId);
         return UserProfileDetailsData.builder()
                 .userProfile(userProfile)
+                .userRole(userProfile.getUser().getRole())
                 .build();
     }
 
@@ -306,13 +307,4 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(NOT_FOUND_PUSH_NOTIFICATION_APPROVAL);
         }
     }
-
-    @Override
-    public UserRoleData getUserRole(String userId){
-        User user = getUser(userId);
-        return UserRoleData.builder()
-                .role(user.getRole())
-                .build();
-    }
-
 }
