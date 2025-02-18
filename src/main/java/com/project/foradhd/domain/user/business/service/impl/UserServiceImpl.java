@@ -6,6 +6,7 @@ import com.project.foradhd.domain.user.business.service.UserAuthInfoService;
 import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.domain.user.persistence.entity.*;
 import com.project.foradhd.domain.user.persistence.enums.Provider;
+import com.project.foradhd.domain.user.persistence.enums.Role;
 import com.project.foradhd.domain.user.persistence.repository.*;
 import com.project.foradhd.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,7 @@ public class UserServiceImpl implements UserService {
         UserProfile userProfile = getUserProfileFetch(userId);
         return UserProfileDetailsData.builder()
                 .userProfile(userProfile)
+                .userRole(userProfile.getUser().getRole())
                 .build();
     }
 

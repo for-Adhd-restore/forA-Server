@@ -10,6 +10,7 @@ import com.project.foradhd.domain.user.business.dto.out.UserProfileDetailsData;
 import com.project.foradhd.domain.user.persistence.entity.*;
 import com.project.foradhd.domain.user.persistence.enums.Provider;
 
+import com.project.foradhd.domain.user.persistence.enums.Role;
 import java.util.List;
 import java.util.Optional;
 
