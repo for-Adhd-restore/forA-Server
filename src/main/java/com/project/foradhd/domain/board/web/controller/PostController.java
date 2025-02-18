@@ -285,7 +285,7 @@ public class PostController {
     }
 
     // 게시글 신고 API
-    @PostMapping("report")
+    @PostMapping("/report")
     public ResponseEntity<Void> reportPost(@RequestBody Long postId,
                                            @RequestBody Report reportType){
         postReportService.postReport(postId, reportType);
@@ -293,7 +293,7 @@ public class PostController {
     }
 
     // 신고 처리 API
-    @PostMapping("handleReport")
+    @PostMapping("/handleReport")
     public ResponseEntity<Void> handleReport(@RequestBody String email,
                                              @RequestBody Long postId,
                                              @RequestBody HandleReport handleReportType){
