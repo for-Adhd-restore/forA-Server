@@ -1,7 +1,6 @@
 package com.project.foradhd.domain.user.web.mapper;
 
 import com.project.foradhd.domain.user.business.dto.in.*;
-import com.project.foradhd.domain.user.business.dto.out.UserRoleData;
 import com.project.foradhd.domain.user.business.dto.out.UserTokenData;
 import com.project.foradhd.domain.user.business.dto.out.UserProfileDetailsData;
 import com.project.foradhd.domain.user.persistence.entity.PushNotificationApproval;
@@ -19,7 +18,6 @@ import com.project.foradhd.domain.user.web.dto.response.EmailAuthValidationRespo
 import com.project.foradhd.domain.user.web.dto.response.SignUpResponse;
 import com.project.foradhd.domain.user.web.dto.response.SnsSignUpResponse;
 import com.project.foradhd.domain.user.web.dto.response.UserProfileDetailsResponse;
-import com.project.foradhd.domain.user.web.dto.response.UserRoleResponse;
 import java.util.List;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;

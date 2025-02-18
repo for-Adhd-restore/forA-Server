@@ -2,7 +2,6 @@ package com.project.foradhd.domain.user.business.service.impl;
 
 import com.project.foradhd.domain.user.business.dto.in.*;
 import com.project.foradhd.domain.user.business.dto.out.UserProfileDetailsData;
-import com.project.foradhd.domain.user.business.dto.out.UserRoleData;
 import com.project.foradhd.domain.user.business.service.UserAuthInfoService;
 import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.domain.user.persistence.entity.*;

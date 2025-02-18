@@ -7,7 +7,6 @@ import com.project.foradhd.domain.user.business.dto.in.SignUpData;
 import com.project.foradhd.domain.user.business.dto.in.SnsSignUpData;
 import com.project.foradhd.domain.user.business.dto.in.TermsApprovalsUpdateData;
 import com.project.foradhd.domain.user.business.dto.out.UserProfileDetailsData;
-import com.project.foradhd.domain.user.business.dto.out.UserRoleData;
 import com.project.foradhd.domain.user.persistence.entity.*;
 import com.project.foradhd.domain.user.persistence.enums.Provider;
 
