@@ -290,8 +290,8 @@ public class PostController {
     }
 
     // 게시글 신고 API
-    @PostMapping("/report")
-    public ResponseEntity<Void> reportPost(@RequestBody Long postId,
+    @PostMapping("/{postId}/report")
+    public ResponseEntity<Void> reportPost(@PathVariable Long postId,
                                            @RequestBody Report reportType){
         postReportService.postReport(postId, reportType);
         return ResponseEntity.ok().build();
