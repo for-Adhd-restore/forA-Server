@@ -5,8 +5,10 @@ import com.project.foradhd.domain.board.business.service.PostReportService;
 import com.project.foradhd.domain.board.business.service.PostScrapFilterService;
 import com.project.foradhd.domain.board.business.service.PostSearchHistoryService;
 import com.project.foradhd.domain.board.business.service.PostService;
+import com.project.foradhd.domain.board.business.service.dto.in.ReportPostData;
 import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.persistence.entity.PostScrapFilter;
+import com.project.foradhd.domain.board.persistence.entity.ReportPost;
 import com.project.foradhd.domain.board.persistence.enums.Category;
 import com.project.foradhd.domain.board.persistence.enums.HandleReport;
 import com.project.foradhd.domain.board.persistence.enums.Report;
@@ -14,6 +16,7 @@ import com.project.foradhd.domain.board.persistence.enums.SortOption;
 import com.project.foradhd.domain.board.web.dto.request.PostRequestDto;
 import com.project.foradhd.domain.board.web.dto.response.PostListResponseDto;
 import com.project.foradhd.domain.board.web.dto.response.PostRankingResponseDto;
+import com.project.foradhd.domain.board.web.dto.response.PostReportListResponseDto;
 import com.project.foradhd.domain.board.web.dto.response.PostScrapFilterResponseDto;
 import com.project.foradhd.domain.board.web.dto.response.PostSearchResponseDto;
 import com.project.foradhd.domain.board.web.mapper.PostMapper;
@@ -21,6 +24,8 @@ import com.project.foradhd.domain.board.web.mapper.PostScrapFilterMapper;
 import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.global.AuthUserId;
 import com.project.foradhd.global.paging.web.dto.response.PagingResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -290,6 +295,34 @@ public class PostController {
                                            @RequestBody Report reportType){
         postReportService.postReport(postId, reportType);
         return ResponseEntity.ok().build();
+    }
+
+    // 신고 당한 게시글 내역 조회 API
+    @GetMapping("/Report")
+    public ResponseEntity<PostReportListResponseDto> getAllReportPosts(@AuthUserId String userId) {
+
+        // 일단 신고당한 게시물들을 중복 없이 가져오기
+        List<Post> reportedPostList = postReportService.findReportedPostList();
+        List<ReportPostData> reportedPostDataList = new ArrayList<>();
+
+        for (Post post : reportedPostList){
+            HashMap<Report, Integer> reportTypeCounts = postReportService.getReportTypeCounts(post);
+            reportedPostDataList.add(
+                    ReportPostData.builder()
+                            .post(post)
+                            .reportTypeCounts(reportTypeCounts)
+                            .build());
+        }
+
+        List<PostReportListResponseDto.PostReportResponseDto> postReportResponseDtoList = reportedPostDataList.stream()
+                .map(reportedPost -> postMapper.toReportedPostResponseDto(reportedPost))
+                .toList();
+
+        PostReportListResponseDto response = PostReportListResponseDto.builder()
+                .postReportList(postReportResponseDtoList)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     // 신고 처리 API

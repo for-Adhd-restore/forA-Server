@@ -14,6 +14,7 @@ import com.project.foradhd.domain.user.persistence.entity.User;
 import com.project.foradhd.domain.user.persistence.repository.UserRepository;
 import com.project.foradhd.global.exception.BusinessException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -78,5 +79,22 @@ public class PostReportServiceImpl implements PostReportService {
                 userRepository.save(user);
             }
         }
+    }
+
+    @Override
+    public List<Post> findReportedPostList(){
+        return reportPostRepository.findAllDistinctReportedPost();
+    }
+
+    @Override
+    public HashMap<Report, Integer> getReportTypeCounts(Post post){
+        HashMap<Report, Integer> reportTypeCounts = new HashMap<>();
+        List<ReportPost> reportPostList = reportPostRepository.findByPost(post);
+
+        for (ReportPost reportPost : reportPostList){
+            reportTypeCounts.put(reportPost.getReportType(), reportPost.getReportCount());
+        }
+
+        return reportTypeCounts;
     }
 }

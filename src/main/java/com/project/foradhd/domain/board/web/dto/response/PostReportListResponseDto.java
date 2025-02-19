@@ -1,9 +1,9 @@
 package com.project.foradhd.domain.board.web.dto.response;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.project.foradhd.domain.board.persistence.entity.Comment;
 import com.project.foradhd.domain.board.persistence.enums.Category;
 import com.project.foradhd.domain.board.persistence.enums.Report;
-import com.project.foradhd.global.paging.web.dto.response.PagingResponse;
 import com.project.foradhd.global.serializer.LocalDateTimeToEpochSecondSerializer;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -13,9 +13,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PostReportListResponseDto {
     private List<PostReportResponseDto> postReportList;
-    private PagingResponse paging;
 
     @Getter
     @Builder
@@ -33,7 +36,7 @@ public class PostReportListResponseDto {
         private long scrapCount;
         private long viewCount;
         private Category category;
-        private List<CommentListResponseDto.CommentResponseDto> comments;
+        private List<Comment> comments;
         private String nickname;
         private String profileImage;
         private String email;

@@ -1,5 +1,6 @@
 package com.project.foradhd.domain.board.web.mapper;
 
+import com.project.foradhd.domain.board.business.service.dto.in.ReportPostData;
 import com.project.foradhd.domain.board.persistence.entity.Comment;
 import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.web.dto.PostDto;
@@ -7,6 +8,7 @@ import com.project.foradhd.domain.board.web.dto.request.PostRequestDto;
 import com.project.foradhd.domain.board.web.dto.response.CommentListResponseDto;
 import com.project.foradhd.domain.board.web.dto.response.PostListResponseDto;
 import com.project.foradhd.domain.board.web.dto.response.PostRankingResponseDto;
+import com.project.foradhd.domain.board.web.dto.response.PostReportListResponseDto.PostReportResponseDto;
 import com.project.foradhd.domain.board.web.dto.response.PostSearchResponseDto;
 import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.domain.user.persistence.entity.User;
@@ -128,4 +130,6 @@ public interface PostMapper {
     @Mapping(source = "images", target = "images")
     @Mapping(source = "createdAt", target = "createdAt")
     PostSearchResponseDto.PostSearchListResponseDto toPostSearchListResponseDto(Post post);
+
+    PostReportResponseDto toReportedPostResponseDto(ReportPostData reportedPost);
 }
