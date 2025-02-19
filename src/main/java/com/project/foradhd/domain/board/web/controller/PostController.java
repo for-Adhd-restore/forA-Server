@@ -298,7 +298,7 @@ public class PostController {
     }
 
     // 신고 당한 게시글 내역 조회 API
-    @GetMapping("/Report")
+    @GetMapping("/report")
     public ResponseEntity<PostReportListResponseDto> getAllReportPosts(@AuthUserId String userId) {
 
         // 일단 신고당한 게시물들을 중복 없이 가져오기
