@@ -2,6 +2,7 @@ package com.project.foradhd.domain.user.web.dto.response;
 
 import com.project.foradhd.domain.user.persistence.enums.ForAdhdType;
 import com.project.foradhd.domain.user.persistence.enums.Role;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,4 +19,6 @@ public class UserProfileDetailsResponse {
     private ForAdhdType forAdhdType;
 
     private Role userRole;
+
+    private LocalDate userBirth;
 }
