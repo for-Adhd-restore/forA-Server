@@ -63,6 +63,9 @@ public class PostReportServiceImpl implements PostReportService {
         user.updateUserStatus(handleReportType);
 
         userRepository.save(user);
+
+        reportPostRepository.deleteByPost(post);
+        postRepository.delete(post);
     }
 
     // 2일 뒤 자동으로 상태를 CLEAN으로 변경
