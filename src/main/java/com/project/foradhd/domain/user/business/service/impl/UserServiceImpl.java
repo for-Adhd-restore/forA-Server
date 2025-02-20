@@ -201,6 +201,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(NOT_FOUND_USER));
+    }
+
+    @Override
     public UserProfile getUserProfile(String userId) {
         return userProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(NOT_FOUND_USER_PROFILE));

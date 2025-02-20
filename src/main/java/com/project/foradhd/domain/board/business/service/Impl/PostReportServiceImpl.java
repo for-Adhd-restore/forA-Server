@@ -10,6 +10,7 @@ import com.project.foradhd.domain.board.persistence.enums.HandleReport;
 import com.project.foradhd.domain.board.persistence.enums.Report;
 import com.project.foradhd.domain.board.persistence.repository.PostRepository;
 import com.project.foradhd.domain.board.persistence.repository.ReportPostRepository;
+import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.domain.user.persistence.entity.User;
 import com.project.foradhd.domain.user.persistence.repository.UserRepository;
 import com.project.foradhd.global.exception.BusinessException;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PostReportServiceImpl implements PostReportService {
 
+    private final UserService userService;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final ReportPostRepository reportPostRepository;
@@ -57,8 +59,7 @@ public class PostReportServiceImpl implements PostReportService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
 
-        User user = userRepository.findByEmail(post.getUser().getId())
-                .orElseThrow(() -> new BusinessException(NOT_FOUND_USER));
+        User user = userService.getUserByEmail(email);
 
         user.updateUserStatus(handleReportType);
 
