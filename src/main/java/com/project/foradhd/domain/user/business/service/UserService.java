@@ -48,6 +48,8 @@ public interface UserService {
 
     User getUser(String userId);
 
+    User getUserByEmail(String email);
+
     UserProfile getUserProfile(String userId);
 
     UserProfile getUserProfileFetch(String userId);

@@ -1,5 +1,6 @@
 package com.project.foradhd.domain.user.persistence.entity;
 
+import com.project.foradhd.domain.board.persistence.enums.HandleReport;
 import com.project.foradhd.domain.user.persistence.enums.Role;
 import com.project.foradhd.global.audit.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -33,6 +34,9 @@ public class User extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.ANONYMOUS;
+
+    @Enumerated(value = EnumType.STRING)
+    private HandleReport status;
 
     @Builder.Default
     @ColumnDefault(value = "0")
@@ -73,5 +77,9 @@ public class User extends BaseTimeEntity {
         this.isVerifiedEmail = false;
         this.deleted = true;
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void updateUserStatus(HandleReport handleReportType){
+        this.status = handleReportType;
     }
 }
