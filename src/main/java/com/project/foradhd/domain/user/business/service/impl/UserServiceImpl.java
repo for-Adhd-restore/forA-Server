@@ -9,6 +9,7 @@ import com.project.foradhd.domain.user.persistence.enums.Provider;
 import com.project.foradhd.domain.user.persistence.enums.Role;
 import com.project.foradhd.domain.user.persistence.repository.*;
 import com.project.foradhd.global.exception.BusinessException;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,9 +49,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserProfileDetailsData getUserProfileDetails(String userId) {
         UserProfile userProfile = getUserProfileFetch(userId);
+        LocalDate userBirth = getUserPrivacy(userId).getBirth();
+
         return UserProfileDetailsData.builder()
                 .userProfile(userProfile)
                 .userRole(userProfile.getUser().getRole())
+                .userBirth(userBirth)
                 .build();
     }
 

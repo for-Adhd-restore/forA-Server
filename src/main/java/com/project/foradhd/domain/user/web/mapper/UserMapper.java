@@ -33,6 +33,8 @@ public interface UserMapper {
         @Mapping(target = "nickname", source = "userProfile.nickname"),
         @Mapping(target = "profileImage", source = "userProfile.profileImage"),
         @Mapping(target = "forAdhdType", source = "userProfile.forAdhdType"),
+            @Mapping(target = "userRole", source = "userRole"),
+            @Mapping(target = "userBirth", source = "userBirth")
     })
     UserProfileDetailsResponse toUserProfileDetailsResponse(UserProfileDetailsData userProfileDetailsData);
 
