@@ -19,7 +19,7 @@ public class PostLikeFilter extends BaseTimeEntity {
     @Column(name = "post_like_filter_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", referencedColumnName = "post_id", nullable = false)
     private Post post;
 
