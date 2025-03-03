@@ -14,6 +14,7 @@ import com.project.foradhd.domain.board.persistence.enums.HandleReport;
 import com.project.foradhd.domain.board.persistence.enums.Report;
 import com.project.foradhd.domain.board.persistence.enums.SortOption;
 import com.project.foradhd.domain.board.web.dto.request.PostRequestDto;
+import com.project.foradhd.domain.board.web.dto.request.ReportTypeDto;
 import com.project.foradhd.domain.board.web.dto.response.PostListResponseDto;
 import com.project.foradhd.domain.board.web.dto.response.PostRankingResponseDto;
 import com.project.foradhd.domain.board.web.dto.response.PostReportListResponseDto;
@@ -292,8 +293,8 @@ public class PostController {
     // 게시글 신고 API
     @PostMapping("/{postId}/report")
     public ResponseEntity<Void> reportPost(@PathVariable Long postId,
-                                           @RequestBody Report reportType){
-        postReportService.postReport(postId, reportType);
+                                           @RequestBody ReportTypeDto reportTypeDto){
+        postReportService.postReport(postId, reportTypeDto.getReportType());
         return ResponseEntity.ok().build();
     }
 
