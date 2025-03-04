@@ -17,4 +17,5 @@ public interface PostScrapFilterRepository extends JpaRepository<PostScrapFilter
     Page<PostScrapFilter> findByUserId(String userId, Pageable pageable);
     @Query("SELECT p FROM PostScrapFilter p WHERE p.user.id = :userId AND p.post.category = :category")
     Page<PostScrapFilter> findByUserIdAndCategory(@Param("userId") String userId, @Param("category") Category category, Pageable pageable);
+    boolean existsByUserIdAndPostId(String userId, Long postId);
 }

@@ -10,4 +10,5 @@ public interface PostScrapFilterService {
     void toggleScrap(Long postId, String userId);
     long getCommentCount(Long postId);
     Page<PostScrapFilter> getScrapsByUserAndCategory(String userId, Category category, Pageable pageable, SortOption sortOption);
+    boolean isUserScrappedPost(String userId, Long postId);
 }

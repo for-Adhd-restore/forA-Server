@@ -31,20 +31,31 @@ public class CommentController {
 
     // 개별 댓글 조회 API
     @GetMapping("/{commentId}")
-    public ResponseEntity<CommentListResponseDto.CommentResponseDto> getComment(@PathVariable Long commentId, @AuthUserId String userId) {
+    public ResponseEntity<CommentListResponseDto.CommentResponseDto> getComment(
+            @PathVariable Long commentId,
+            @AuthUserId String userId) {
+
         Comment comment = commentService.getComment(commentId);
         List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);
-        return ResponseEntity.ok(commentMapper.commentToCommentResponseDto(comment, blockedUserIdList));
+
+        return ResponseEntity.ok(
+                commentMapper.commentToCommentResponseDto(comment, blockedUserIdList, userId, userService)
+        );
     }
 
     // 댓글 작성 API
     @PostMapping
-    public ResponseEntity<CommentListResponseDto.CommentResponseDto> createComment(@RequestBody CreateCommentRequestDto createCommentRequestDto, @AuthUserId String userId) {
+    public ResponseEntity<CommentListResponseDto.CommentResponseDto> createComment(
+            @RequestBody CreateCommentRequestDto createCommentRequestDto,
+            @AuthUserId String userId) {
+
         Comment comment = commentMapper.createCommentRequestDtoToComment(createCommentRequestDto, userId);
         Comment createdComment = commentService.createComment(comment, userId);
         List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);
-        CommentListResponseDto.CommentResponseDto response = commentMapper.commentToCommentResponseDto(createdComment, blockedUserIdList);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                commentMapper.commentToCommentResponseDto(createdComment, blockedUserIdList, userId, userService) // ✅ userService 추가
+        );
     }
 
     // 원댓글 삭제 API
@@ -61,13 +72,13 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
 
+    // 댓글 수정 api
     @PutMapping("/{commentId}")
     public ResponseEntity<CommentListResponseDto.CommentResponseDto> updateComment(
             @PathVariable Long commentId,
             @RequestBody CreateCommentRequestDto createCommentRequest,
             @AuthUserId String userId) {
 
-        // 서비스 호출하여 댓글 수정
         Comment updatedComment = commentService.updateComment(
                 commentId,
                 createCommentRequest.getContent(),
@@ -75,8 +86,10 @@ public class CommentController {
                 userId);
 
         List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);
-        // 매퍼를 이용해 엔티티를 DTO로 변환하여 반환
-        return ResponseEntity.ok(commentMapper.commentToCommentResponseDto(updatedComment, blockedUserIdList));
+
+        return ResponseEntity.ok(
+                commentMapper.commentToCommentResponseDto(updatedComment, blockedUserIdList, userId, userService) // ✅ userService 추가
+        );
     }
 
     // 나의 댓글
@@ -111,8 +124,9 @@ public class CommentController {
 
         Page<Comment> comments = commentService.getCommentsByPost(postId, pageable, sortOption);
         List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);
+
         List<CommentListResponseDto.CommentResponseDto> commentList = comments.getContent().stream()
-                .map(comment -> commentMapper.commentToCommentResponseDto(comment, blockedUserIdList))
+                .map(comment -> commentMapper.commentToCommentResponseDto(comment, blockedUserIdList, userId, userService))
                 .toList();
 
         PagingResponse pagingResponse = PagingResponse.from(comments);

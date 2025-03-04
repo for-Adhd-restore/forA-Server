@@ -68,6 +68,12 @@ public class PostScrapFilterServiceImpl implements PostScrapFilterService {
         return commentCount + replyCount;
     }
 
+    @Transactional
+    public boolean isUserScrappedPost(String userId, Long postId) {
+        return postScrapFilterRepository.existsByUserIdAndPostId(userId, postId);
+    }
+
+
     private Sort getSortByOption(SortOption option) {
         switch (option) {
             case NEWEST_FIRST:

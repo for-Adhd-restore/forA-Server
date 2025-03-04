@@ -4,6 +4,7 @@ import com.project.foradhd.domain.board.persistence.entity.Comment;
 import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.web.dto.request.CreateCommentRequestDto;
 import com.project.foradhd.domain.board.web.dto.response.CommentListResponseDto;
+import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.domain.user.persistence.entity.User;
 import com.project.foradhd.domain.user.persistence.entity.UserProfile;
 import com.project.foradhd.domain.user.persistence.repository.UserProfileRepository;
@@ -37,19 +38,88 @@ public interface CommentMapper {
         commentBuilder.user(User.builder().id(userId).build());
     }
 
-    @Mapping(source = "post.id", target = "postId")
-    @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "parentComment.id", target = "parentCommentId")
-    @Mapping(target = "children", expression = "java(mapChildComments(comment.getChildComments(), blockedUserIdList))")
-    CommentListResponseDto.CommentResponseDto commentToCommentResponseDto(Comment comment, @Context List<String> blockedUserIdList);
+    @Mapping(source = "comment.id", target = "id")
+    @Mapping(source = "comment.content", target = "content")
+    @Mapping(source = "comment.user.id", target = "userId")
+    @Mapping(source = "comment.post.id", target = "postId")
+    @Mapping(source = "comment.anonymous", target = "anonymous")
+    @Mapping(source = "comment.likeCount", target = "likeCount")
+    @Mapping(source = "comment.createdAt", target = "createdAt")
+    @Mapping(source = "comment.lastModifiedAt", target = "lastModifiedAt")
+    @Mapping(source = "comment.parentComment.id", target = "parentCommentId")
+    @Mapping(target = "children", expression = "java(mapChildComments(comment.getChildComments(), blockedUserIdList, loggedInUserId, userService))")
+    @Mapping(target = "nickname", expression = "java(getNickname(comment, userService))")
+    @Mapping(target = "profileImage", expression = "java(getProfileImage(comment, userService))")
+    @Mapping(target = "isBlocked", expression = "java(isBlockedUser(comment, blockedUserIdList))")
+    @Mapping(target = "isCommentAuthor", expression = "java(isCommentAuthor(comment, loggedInUserId))")
+    CommentListResponseDto.CommentResponseDto commentToCommentResponseDto(
+            Comment comment,
+            List<String> blockedUserIdList,
+            String loggedInUserId,
+            UserService userService);
 
-    @AfterMapping
-    default void setIsBlockedComment(@MappingTarget CommentListResponseDto.CommentResponseDto.CommentResponseDtoBuilder dto, Comment comment, @Context List<String> blockedUserIdList) {
-        boolean isBlocked = blockedUserIdList.contains(comment.getUser().getId());
-        dto.isBlocked(isBlocked);
+    // ✅ 댓글 작성자인지 확인하는 함수
+    default boolean isCommentAuthor(Comment comment, String loggedInUserId) {
+        return comment.getUser() != null && comment.getUser().getId().equals(loggedInUserId);
     }
 
-    default CommentListResponseDto.CommentResponseDto commentToCommentListResponseDtoWithChildren(Comment comment, List<String> blockedUserIdList) {
+    // ✅ 닉네임 가져오는 함수
+    default String getNickname(Comment comment, UserService userService) {
+        if (comment.getAnonymous()) {
+            return "익명";
+        }
+        if (comment.getUser() != null) {
+            UserProfile userProfile = userService.getUserProfile(comment.getUser().getId());
+            if (userProfile != null && userProfile.getNickname() != null) {
+                return userProfile.getNickname();
+            }
+        }
+        return "알 수 없음";
+    }
+
+    // ✅ 프로필 이미지 가져오는 함수
+    default String getProfileImage(Comment comment, UserService userService) {
+        if (comment.getAnonymous()) {
+            return "image/default-profile.png";
+        }
+        if (comment.getUser() != null) {
+            UserProfile userProfile = userService.getUserProfile(comment.getUser().getId());
+            if (userProfile != null && userProfile.getProfileImage() != null) {
+                return userProfile.getProfileImage();
+            }
+        }
+        return "image/default-profile.png";
+    }
+
+    // ✅ 차단된 사용자 여부 확인 함수
+    default boolean isBlockedUser(Comment comment, List<String> blockedUserIdList) {
+        return comment.getUser() != null && blockedUserIdList.contains(comment.getUser().getId());
+    }
+
+    // ✅ 대댓글 매핑 함수
+    @Named("mapChildComments")
+    default List<CommentListResponseDto.CommentResponseDto> mapChildComments(
+            List<Comment> childComments,
+            List<String> blockedUserIdList,
+            String loggedInUserId,
+            UserService userService) {
+        if (childComments == null) {
+            return List.of();
+        }
+        return childComments.stream()
+                .map(childComment -> commentToCommentResponseDto(childComment, blockedUserIdList, loggedInUserId, userService))
+                .toList();
+    }
+
+    default CommentListResponseDto.CommentResponseDto commentToCommentListResponseDtoWithChildren(
+            Comment comment,
+            List<String> blockedUserIdList,
+            String loggedInUserId,
+            @Context UserService userService) {
+
+        boolean isCommentAuthor = comment.getUser() != null && comment.getUser().getId().equals(loggedInUserId);
+        boolean isBlocked = comment.getUser() != null && blockedUserIdList.contains(comment.getUser().getId());
+
         return CommentListResponseDto.CommentResponseDto.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
@@ -60,9 +130,11 @@ public interface CommentMapper {
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())
                 .parentCommentId(comment.getParentComment() != null ? comment.getParentComment().getId() : null)
-                .children(comment.getChildComments() != null ? mapChildComments(comment.getChildComments(), blockedUserIdList) : List.of())
-                .nickname(comment.getNickname())
-                .profileImage(comment.getProfileImage())
+                .children(comment.getChildComments() != null ? mapChildComments(comment.getChildComments(), blockedUserIdList, loggedInUserId, userService) : List.of())
+                .nickname(getNickname(comment, userService))
+                .profileImage(getProfileImage(comment, userService))
+                .isBlocked(isBlocked)
+                .isCommentAuthor(isCommentAuthor)
                 .build();
     }
 
@@ -88,15 +160,5 @@ public interface CommentMapper {
             return null;
         }
         return userRepository.findById(userId).orElse(null);
-    }
-
-    @Named("mapChildComments")
-    default List<CommentListResponseDto.CommentResponseDto> mapChildComments(List<Comment> childComments, List<String> blockedUserIdList) {
-        if (childComments == null) {
-            return List.of();
-        }
-        return childComments.stream()
-                .map(childComment -> commentToCommentResponseDto(childComment, blockedUserIdList))
-                .toList();
     }
 }

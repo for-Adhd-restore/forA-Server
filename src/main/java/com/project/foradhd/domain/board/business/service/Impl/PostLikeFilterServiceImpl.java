@@ -48,6 +48,10 @@ public class PostLikeFilterServiceImpl implements PostLikeFilterService {
         postRepository.save(post);
     }
 
+    public boolean isUserLikedPost(String userId, Long postId) {
+        return postLikeFilterRepository.existsByUserIdAndPostId(userId, postId);
+    }
+
     @Override
     public Page<Post> getLikedPostsByUser(String userId, Pageable pageable) {
         return postLikeFilterRepository.findPostsLikedByUser(userId, pageable);
