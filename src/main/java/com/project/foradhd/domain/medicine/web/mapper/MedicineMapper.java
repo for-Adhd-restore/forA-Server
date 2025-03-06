@@ -8,6 +8,7 @@ import com.project.foradhd.domain.medicine.web.dto.response.MedicineResponse;
 import com.project.foradhd.domain.medicine.web.dto.response.MedicineSearchResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.List;
 
@@ -30,7 +31,12 @@ public interface MedicineMapper {
     @Mapping(source = "bookmark.medicine.itemEngName", target = "engName")
     @Mapping(source = "bookmark.medicine.entpName", target = "manufacturer")
     @Mapping(source = "bookmark.medicine.itemImage", target = "images")
+    @Mapping(source = "bookmark.createdAt", target = "bookmarkedAt", qualifiedByName = "toEpochTime")
     MedicineBookmarkResponse toResponseDto(MedicineBookmark bookmark);
+    @Named("toEpochTime")
+    default long toEpochTime(java.time.LocalDateTime createdAt) {
+        return createdAt != null ? createdAt.toEpochSecond(java.time.ZoneOffset.UTC) : 0L;
+    }
 
     @Mapping(source = "itemImage", target = "itemImage")
     @Mapping(source = "itemName", target = "itemName")

@@ -61,4 +61,5 @@ public class MedicineBookmarkController {
 
         return ResponseEntity.ok(response);
     }
+
 }
