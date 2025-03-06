@@ -41,6 +41,9 @@ public class PostListResponseDto {
         private String nickname;
         private String profileImage;
         private Boolean isBlocked;
+        private Boolean isAuthor;
+        private Boolean isScrapped;
+        private Boolean isLiked;
 
         @JsonSerialize(using = LocalDateTimeToEpochSecondSerializer.class)
         private LocalDateTime createdAt;

@@ -7,4 +7,5 @@ import org.springframework.data.domain.Pageable;
 public interface PostLikeFilterService {
     void toggleLike(String userId, Long postId);
     Page<Post> getLikedPostsByUser(String userId, Pageable pageable);
+    boolean isUserLikedPost(String userId, Long postId);
 }

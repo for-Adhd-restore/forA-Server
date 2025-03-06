@@ -59,56 +59,91 @@ public interface PostMapper {
         }
     }
 
-    @Mapping(target = "comments", expression = "java(mapCommentList(post.getComments(), blockedUserIdList))")
-    @Mapping(target = "commentCount", expression = "java(calculateCommentCount(post.getComments()))")
-    @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "nickname", target = "nickname")
-    @Mapping(source = "profileImage", target = "profileImage")
-    PostListResponseDto.PostResponseDto toPostResponseDto(Post post, @Context UserService userService, @Context List<String> blockedUserIdList);
+    @Mapping(source = "post.id", target = "id")
+    @Mapping(source = "post.user.id", target = "userId")
+    @Mapping(source = "post.title", target = "title")
+    @Mapping(source = "post.content", target = "content")
+    @Mapping(source = "post.anonymous", target = "anonymous")
+    @Mapping(source = "post.images", target = "images")
+    @Mapping(source = "post.likeCount", target = "likeCount")
+    @Mapping(source = "post.commentCount", target = "commentCount")
+    @Mapping(source = "post.scrapCount", target = "scrapCount")
+    @Mapping(source = "post.viewCount", target = "viewCount")
+    @Mapping(source = "post.category", target = "category")
+    @Mapping(target = "comments", expression = "java(mapCommentList(post.getComments(), blockedUserIdList, loggedInUserId, userService))")
+    @Mapping(source = "isScrapped", target = "isScrapped")
+    @Mapping(source = "isLiked", target = "isLiked")
+    @Mapping(source = "isAuthor", target = "isAuthor")
+    @Mapping(target = "nickname", expression = "java(getNickname(post, userService))")
+    @Mapping(target = "profileImage", expression = "java(getProfileImage(post, userService))")
+    @Mapping(target = "isBlocked", ignore = true)
+    PostListResponseDto.PostResponseDto toPostResponseDto(
+            Post post,
+            UserService userService,
+            List<String> blockedUserIdList,
+            boolean isScrapped,
+            boolean isLiked,
+            boolean isAuthor,
+            String loggedInUserId
+    );
 
-    @AfterMapping
-    default void setUsers(@MappingTarget Post.PostBuilder postBuilder, @Context String userId, @Context UserService userService) {
-        if (userId != null) {
-            User user = userService.getUser(userId);
-            UserProfile userProfile = userService.getUserProfile(userId);
-
-            postBuilder.user(user);
-            if (userProfile != null) {
-                postBuilder.nickname(userProfile.getNickname());
-                postBuilder.profileImage(userProfile.getProfileImage());
+    // ✅ 닉네임 가져오는 함수
+    default String getNickname(Post post, UserService userService) {
+        if (post.getAnonymous()) {
+            return "익명";
+        }
+        if (post.getUser() != null) {
+            UserProfile userProfile = userService.getUserProfile(post.getUser().getId());
+            if (userProfile != null && userProfile.getNickname() != null) {
+                return userProfile.getNickname();
             }
         }
+        return "알 수 없음";
+    }
+
+    // ✅ 프로필 이미지 가져오는 함수
+    default String getProfileImage(Post post, UserService userService) {
+        if (post.getAnonymous()) {
+            return "image/default-profile.png";
+        }
+        if (post.getUser() != null) {
+            UserProfile userProfile = userService.getUserProfile(post.getUser().getId());
+            if (userProfile != null && userProfile.getProfileImage() != null) {
+                return userProfile.getProfileImage();
+            }
+        }
+        return "image/default-profile.png";
     }
 
     @AfterMapping
-    default void setAnonymousOrUserProfile(@MappingTarget PostListResponseDto.PostResponseDto.PostResponseDtoBuilder dto, Post post, @Context UserService userService) {
-        if (post.getAnonymous()) {
-            dto.nickname("익명");
-            dto.profileImage("image/default-profile.png");
-        } else if (post.getUser() != null) {
-            UserProfile userProfile = userService.getUserProfile(post.getUser().getId());
-            if (userProfile != null) {
-                dto.nickname(userProfile.getNickname());
-                dto.profileImage(userProfile.getProfileImage());
-            }
-        }
+    default void setIsBlocked(
+            @MappingTarget PostListResponseDto.PostResponseDto.PostResponseDtoBuilder dtoBuilder,
+            Post post,
+            @Context List<String> blockedUserIdList) {
+
+        boolean isBlocked = post.getUser() != null && blockedUserIdList.contains(post.getUser().getId());
+        dtoBuilder.isBlocked(isBlocked);
+    }
+
+    // ✅ 빌더 패턴 적용: 댓글 리스트 매핑 추가 (부모 댓글만 반환)
+    default List<CommentListResponseDto.CommentResponseDto> mapCommentList(
+            List<Comment> comments,
+            List<String> blockedUserIdList,
+            String loggedInUserId,
+            UserService userService) {
+        if (comments == null) return List.of();
+        CommentMapper commentMapper = Mappers.getMapper(CommentMapper.class);
+
+        return comments.stream()
+                .filter(comment -> comment.getParentComment() == null)
+                .map(comment -> commentMapper.commentToCommentResponseDto(comment, blockedUserIdList, loggedInUserId, userService))
+                .collect(Collectors.toList());
     }
 
     @AfterMapping
     default void setIsBlockedPost(@MappingTarget PostListResponseDto.PostResponseDto.PostResponseDtoBuilder dto, Post post, @Context List<String> blockedUserIdList) {
         boolean isBlocked = blockedUserIdList.contains(post.getUser().getId());
         dto.isBlocked(isBlocked);
-    }
-
-    default List<CommentListResponseDto.CommentResponseDto> mapCommentList(List<Comment> comments, List<String> blockedUserIdList) {
-        if (comments == null) return List.of();
-        CommentMapper commentMapper = Mappers.getMapper(CommentMapper.class);
-
-        // 부모 댓글만 매핑
-        return comments.stream()
-                .filter(comment -> comment.getParentComment() == null) // 부모 댓글만 필터링
-                .map(comment -> commentMapper.commentToCommentResponseDto(comment, blockedUserIdList))
-                .collect(Collectors.toList());
     }
 
 
