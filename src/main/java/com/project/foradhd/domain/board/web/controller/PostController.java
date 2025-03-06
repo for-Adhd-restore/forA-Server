@@ -310,8 +310,24 @@ public class PostController {
             HashMap<Report, Integer> reportTypeCounts = postReportService.getReportTypeCounts(post);
             reportedPostDataList.add(
                     ReportPostData.builder()
-                            .post(post)
+                            .id(post.getId())
+                            .userId(post.getUser().getId())
+                            .title(post.getTitle())
+                            .content(post.getContent())
+                            .anonymous(post.getAnonymous())
+                            .images(post.getImages())
+                            .likeCount(post.getLikeCount())
+                            .commentCount(post.getCommentCount())
+                            .scrapCount(post.getScrapCount())
+                            .viewCount(post.getViewCount())
+                            .category(post.getCategory())
+                            .comments(post.getComments())
+                            .nickname(post.getNickname())
+                            .profileImage(post.getProfileImage())
+                            .email(post.getUser().getEmail())
                             .reportTypeCounts(reportTypeCounts)
+                            .createdAt(post.getCreatedAt())
+                            .lastModifiedAt(post.getLastModifiedAt())
                             .build());
         }
 

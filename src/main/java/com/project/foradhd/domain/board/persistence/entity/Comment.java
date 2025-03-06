@@ -1,5 +1,6 @@
 package com.project.foradhd.domain.board.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.foradhd.domain.user.persistence.entity.User;
 import com.project.foradhd.global.audit.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -24,10 +25,12 @@ public class Comment extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", referencedColumnName = "post_id")
+    @JsonIgnore
     private Post post; // 이 댓글이 속한 게시글 id
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @JsonIgnore
     private User user; // 댓글 작성자 id
 
     @Column(nullable = false, columnDefinition = "longtext")
@@ -35,6 +38,7 @@ public class Comment extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id", referencedColumnName = "comment_id")
+    @JsonIgnore
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
