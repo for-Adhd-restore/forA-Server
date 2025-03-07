@@ -42,19 +42,17 @@ public class MedicineReviewServiceImpl implements MedicineReviewService {
         Medicine medicine = medicineRepository.findById(request.getMedicineId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEDICINE));
 
-// ✅ 1. 리뷰 먼저 저장 (coMedications 없이)
         MedicineReview savedReview = medicineReviewRepository.save(
                 MedicineReview.builder()
                         .medicine(medicine)
                         .user(user)
                         .content(request.getContent())
                         .grade(request.getGrade())
-                        .images(request.getImages() != null ? request.getImages() : new ArrayList<>()) // null 방지
-                        .coMedications(new ArrayList<>()) // 빈 리스트로 초기화
+                        .images(request.getImages() != null ? request.getImages() : new ArrayList<>())
+                        .coMedications(new ArrayList<>())
                         .build()
         );
 
-// ✅ 2. coMedications 추가
         if (request.getCoMedications() != null && !request.getCoMedications().isEmpty()) {
             List<MedicineCoMedication> coMedicationEntities = new ArrayList<>();
             for (Long medicineId : request.getCoMedications()) {
@@ -62,15 +60,14 @@ public class MedicineReviewServiceImpl implements MedicineReviewService {
                         .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEDICINE));
 
                 MedicineCoMedication coMedication = MedicineCoMedication.builder()
-                        .review(savedReview) // ✅ review_id가 존재하는 상태
+                        .review(savedReview)
                         .medicine(foundMedicine)
                         .build();
                 coMedicationEntities.add(coMedication);
             }
 
-            // ✅ 3. savedReview에 coMedications 추가 후 다시 저장
             savedReview.getCoMedications().addAll(coMedicationEntities);
-            medicineReviewRepository.save(savedReview); // ⭐️ 여기서 다시 저장
+            medicineReviewRepository.save(savedReview);
         }
 
         return savedReview;
