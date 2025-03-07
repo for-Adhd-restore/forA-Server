@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -45,10 +46,8 @@ public class MedicineReview extends BaseTimeEntity {
     @Column(nullable = false)
     private String profileImage;
 
-    @ElementCollection
-    @CollectionTable(name = "medicine_co_medications", joinColumns = @JoinColumn(name = "medicine_review_id"))
-    @Column(name = "medicine_id")
-    private List<Long> coMedications;
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MedicineCoMedication> coMedications = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "longtext")
     private String content;
