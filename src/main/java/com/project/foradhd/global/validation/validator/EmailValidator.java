@@ -20,6 +20,7 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
             "hotmail.com", "outlook.com", "facebook.com");
     private static final String EMAIL_AT_SYMBOL = "@";
     private static final String EMAIL_DOMAIN_VALIDATION_MESSAGE_CODE = "email.notSupported.domain";
+    private static final String EMAIL_FORMAT_VALIDATION_MESSAGE_CODE = "email.invalid.format";
 
     private final MessageSource validationMessageSource;
 
@@ -32,7 +33,7 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
         }
     }
 
-    @Override
+/*    @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
         if (!StringUtils.hasText(email) ||
                 !email.matches(emailRegex)) {
@@ -46,10 +47,25 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
             return false;
         }
         return true;
+    }*/
+
+    @Override
+    public boolean isValid(String email, ConstraintValidatorContext context) {
+        if (!StringUtils.hasText(email) || !email.matches(emailRegex)) {
+            setValidationMessage(context, EMAIL_FORMAT_VALIDATION_MESSAGE_CODE);
+            return false; // 이메일 형식이 올바르지 않음
+        }
+
+        return true; // 형식만 맞으면 허용
     }
 
     private String parseDomain(String email) {
-        if (!email.matches(DEFAULT_EMAIL_REGEX)) return "";
-        return email.split(EMAIL_AT_SYMBOL)[1];
+        return email.substring(email.indexOf(EMAIL_AT_SYMBOL) + 1);
+    }
+
+    private void setValidationMessage(ConstraintValidatorContext context, String messageCode) {
+        String message = validationMessageSource.getMessage(messageCode, null, Locale.KOREA);
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
     }
 }
