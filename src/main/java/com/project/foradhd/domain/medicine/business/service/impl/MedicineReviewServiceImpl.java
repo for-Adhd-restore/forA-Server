@@ -3,6 +3,7 @@ package com.project.foradhd.domain.medicine.business.service.impl;
 import com.project.foradhd.domain.board.persistence.enums.SortOption;
 import com.project.foradhd.domain.medicine.business.service.MedicineReviewService;
 import com.project.foradhd.domain.medicine.persistence.entity.Medicine;
+import com.project.foradhd.domain.medicine.persistence.entity.MedicineCoMedication;
 import com.project.foradhd.domain.medicine.persistence.entity.MedicineReview;
 import com.project.foradhd.domain.medicine.persistence.entity.MedicineReviewLikeFilter;
 import com.project.foradhd.domain.medicine.persistence.repository.MedicineRepository;
@@ -21,6 +22,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -35,25 +39,38 @@ public class MedicineReviewServiceImpl implements MedicineReviewService {
     @Transactional
     public MedicineReview createReview(MedicineReviewRequest request, String userId) {
         User user = userService.getUser(userId);
-
         Medicine medicine = medicineRepository.findById(request.getMedicineId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEDICINE));
 
-        MedicineReview medicineReview = MedicineReview.builder()
-                .medicine(medicine)
-                .user(user)
-                .content(request.getContent())
-                .grade(request.getGrade())
-                .images(request.getImages())
-                .coMedications(request.getCoMedications())
-                .build();
+        MedicineReview savedReview = medicineReviewRepository.save(
+                MedicineReview.builder()
+                        .medicine(medicine)
+                        .user(user)
+                        .content(request.getContent())
+                        .grade(request.getGrade())
+                        .images(request.getImages() != null ? request.getImages() : new ArrayList<>())
+                        .coMedications(new ArrayList<>())
+                        .build()
+        );
 
-        MedicineReview savedReview = medicineReviewRepository.save(medicineReview);
+        if (request.getCoMedications() != null && !request.getCoMedications().isEmpty()) {
+            List<MedicineCoMedication> coMedicationEntities = new ArrayList<>();
+            for (Long medicineId : request.getCoMedications()) {
+                Medicine foundMedicine = medicineRepository.findById(medicineId)
+                        .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEDICINE));
 
-        // 약의 평균 별점을 업데이트
-        updateMedicineRating(medicine);
+                MedicineCoMedication coMedication = MedicineCoMedication.builder()
+                        .review(savedReview)
+                        .medicine(foundMedicine)
+                        .build();
+                coMedicationEntities.add(coMedication);
+            }
 
-        return savedReview; // DTO 변환 없이 엔티티를 반환
+            savedReview.getCoMedications().addAll(coMedicationEntities);
+            medicineReviewRepository.save(savedReview);
+        }
+
+        return savedReview;
     }
 
     @Override
@@ -90,9 +107,22 @@ public class MedicineReviewServiceImpl implements MedicineReviewService {
         Medicine medicine = medicineRepository.findById(request.getMedicineId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEDICINE));
 
+        // ✅ 기존 coMedications 삭제 (먼저 새로운 객체를 만든 후 추가해야 lambda 문제 없음)
+        List<MedicineCoMedication> coMedications = request.getCoMedications().stream()
+                .map(medicineId -> {
+                    Medicine coMedicine = medicineRepository.findById(medicineId)
+                            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEDICINE));
+                    return MedicineCoMedication.builder()
+                            .review(existingReview)  // 기존 객체 사용 가능
+                            .medicine(coMedicine)
+                            .build();
+                })
+                .toList();
+
+        // ✅ 새 `updatedReview` 객체 생성 (기존 review 변경 X)
         MedicineReview updatedReview = existingReview.toBuilder()
                 .medicine(medicine)
-                .coMedications(request.getCoMedications())
+                .coMedications(coMedications)  // 새 coMedications 추가
                 .content(request.getContent())
                 .images(request.getImages())
                 .grade(request.getGrade())
@@ -100,11 +130,13 @@ public class MedicineReviewServiceImpl implements MedicineReviewService {
 
         MedicineReview savedReview = medicineReviewRepository.save(updatedReview);
 
-        // 약의 평균 별점을 업데이트
+        // ✅ 약의 평균 별점 업데이트
         updateMedicineRating(medicine);
 
         return savedReview; // DTO 변환 없이 엔티티를 반환
     }
+
+
 
     @Override
     @Transactional
