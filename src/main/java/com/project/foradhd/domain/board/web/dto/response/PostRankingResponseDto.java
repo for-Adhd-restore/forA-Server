@@ -27,6 +27,9 @@ public class PostRankingResponseDto {
     @JsonSerialize(using = LocalDateTimeToEpochSecondSerializer.class)
     private LocalDateTime createdAt;
     private List<String> images;
+    private Boolean isBlocked;
+
+
 
     @Getter
     @Builder

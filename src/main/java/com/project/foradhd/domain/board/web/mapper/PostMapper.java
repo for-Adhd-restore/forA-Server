@@ -159,9 +159,10 @@ public interface PostMapper {
                 .sum();
     }
 
-    @Mapping(source = "category", target = "category")
-    @Mapping(source = "user.id", target = "userId")
-    PostRankingResponseDto toPostRankingResponseDto(Post post);
+    @Mapping(source = "post.category", target = "category")
+    @Mapping(source = "post.user.id", target = "userId")
+    @Mapping(target = "isBlocked", expression = "java(isBlockedUser(post, blockedUserIdList))")
+    PostRankingResponseDto toPostRankingResponseDto(Post post, List<String> blockedUserIdList);
 
     @Mapping(source = "title", target = "title")
     @Mapping(source = "viewCount", target = "viewCount")
