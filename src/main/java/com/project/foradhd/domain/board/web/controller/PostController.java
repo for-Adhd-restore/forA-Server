@@ -215,11 +215,15 @@ public class PostController {
 
     // 메인홈 - 실시간 랭킹
     @GetMapping("/main/top")
-    public ResponseEntity<PostRankingResponseDto.PagedPostRankingResponseDto> getTopPosts(Pageable pageable) {
+    public ResponseEntity<PostRankingResponseDto.PagedPostRankingResponseDto> getTopPosts(@AuthUserId String userId, Pageable pageable) {
         Page<Post> postPage = postService.getTopPosts(pageable);
 
+        List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);
+
         List<PostRankingResponseDto> postList = postPage.getContent().stream()
-                .map(postMapper::toPostRankingResponseDto)
+                .map(post -> postMapper.toPostRankingResponseDto(
+                        post, blockedUserIdList
+                ))
                 .toList();
 
         PagingResponse pagingResponse = PagingResponse.from(postPage);
@@ -236,12 +240,17 @@ public class PostController {
     // 메인홈 - 카테고리별 실시간 랭킹
     @GetMapping("/main/top/category")
     public ResponseEntity<PostRankingResponseDto.PagedPostRankingResponseDto> getTopPostsByCategory(
+            @AuthUserId String userId,
             @RequestParam("category") Category category,
             Pageable pageable) {
         Page<Post> postPage = postService.getTopPostsByCategory(category, pageable);
 
+        List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);
+
         List<PostRankingResponseDto> postList = postPage.getContent().stream()
-                .map(postMapper::toPostRankingResponseDto)
+                .map(post -> postMapper.toPostRankingResponseDto(
+                        post, blockedUserIdList
+                ))
                 .toList();
 
         PagingResponse pagingResponse = PagingResponse.from(postPage);

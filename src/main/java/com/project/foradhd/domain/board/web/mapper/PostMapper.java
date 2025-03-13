@@ -76,7 +76,7 @@ public interface PostMapper {
     @Mapping(source = "isAuthor", target = "isAuthor")
     @Mapping(target = "nickname", expression = "java(getNickname(post, userService))")
     @Mapping(target = "profileImage", expression = "java(getProfileImage(post, userService))")
-    @Mapping(target = "isBlocked", ignore = true)
+    @Mapping(target = "isBlocked", expression = "java(isBlockedUser(post, blockedUserIdList))")
     PostListResponseDto.PostResponseDto toPostResponseDto(
             Post post,
             UserService userService,
@@ -125,6 +125,11 @@ public interface PostMapper {
         dtoBuilder.isBlocked(isBlocked);
     }
 
+    // ✅ 차단된 사용자 여부 확인 함수
+    default boolean isBlockedUser(Post post, List<String> blockedUserIdList) {
+        return post.getUser() != null && blockedUserIdList.contains(post.getUser().getId());
+    }
+
     // ✅ 빌더 패턴 적용: 댓글 리스트 매핑 추가 (부모 댓글만 반환)
     default List<CommentListResponseDto.CommentResponseDto> mapCommentList(
             List<Comment> comments,
@@ -154,9 +159,10 @@ public interface PostMapper {
                 .sum();
     }
 
-    @Mapping(source = "category", target = "category")
-    @Mapping(source = "user.id", target = "userId")
-    PostRankingResponseDto toPostRankingResponseDto(Post post);
+    @Mapping(source = "post.category", target = "category")
+    @Mapping(source = "post.user.id", target = "userId")
+    @Mapping(target = "isBlocked", expression = "java(isBlockedUser(post, blockedUserIdList))")
+    PostRankingResponseDto toPostRankingResponseDto(Post post, List<String> blockedUserIdList);
 
     @Mapping(source = "title", target = "title")
     @Mapping(source = "viewCount", target = "viewCount")
