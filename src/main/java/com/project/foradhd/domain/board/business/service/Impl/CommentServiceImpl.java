@@ -184,4 +184,16 @@ public class CommentServiceImpl implements CommentService {
             return "익명 " + (anonymousCount + 1);
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isUserLikedComment(String userId, Long commentId) {
+        return commentLikeFilterRepository.existsByUserIdAndCommentId(userId, commentId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isCommentAuthor(String userId, Long commentId) {
+        return commentRepository.existsByIdAndUserId(commentId, userId);
+    }
 }
