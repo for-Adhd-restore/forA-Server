@@ -21,4 +21,5 @@ public interface CommentLikeFilterRepository extends JpaRepository<CommentLikeFi
     @Transactional
     @Query("UPDATE Comment c SET c.likeCount = c.likeCount - 1 WHERE c.id = :commentId")
     void decrementLikeCount(Long commentId);
+    boolean existsByUserIdAndCommentId(String userId, Long commentId);
 }

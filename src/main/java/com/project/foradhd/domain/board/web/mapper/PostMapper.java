@@ -1,5 +1,6 @@
 package com.project.foradhd.domain.board.web.mapper;
 
+import com.project.foradhd.domain.board.business.service.CommentService;
 import com.project.foradhd.domain.board.business.service.dto.in.ReportPostData;
 import com.project.foradhd.domain.board.persistence.entity.Comment;
 import com.project.foradhd.domain.board.persistence.entity.Post;
@@ -70,7 +71,7 @@ public interface PostMapper {
     @Mapping(source = "post.scrapCount", target = "scrapCount")
     @Mapping(source = "post.viewCount", target = "viewCount")
     @Mapping(source = "post.category", target = "category")
-    @Mapping(target = "comments", expression = "java(mapCommentList(post.getComments(), blockedUserIdList, loggedInUserId, userService))")
+    @Mapping(target = "comments", expression = "java(mapCommentList(post.getComments(), blockedUserIdList, loggedInUserId, userService, commentService))")
     @Mapping(source = "isScrapped", target = "isScrapped")
     @Mapping(source = "isLiked", target = "isLiked")
     @Mapping(source = "isAuthor", target = "isAuthor")
@@ -84,7 +85,8 @@ public interface PostMapper {
             boolean isScrapped,
             boolean isLiked,
             boolean isAuthor,
-            String loggedInUserId
+            String loggedInUserId,
+            CommentService commentService
     );
 
     // ✅ 닉네임 가져오는 함수
@@ -135,13 +137,21 @@ public interface PostMapper {
             List<Comment> comments,
             List<String> blockedUserIdList,
             String loggedInUserId,
-            UserService userService) {
+            UserService userService,
+            @Context CommentService commentService) {
         if (comments == null) return List.of();
         CommentMapper commentMapper = Mappers.getMapper(CommentMapper.class);
 
         return comments.stream()
                 .filter(comment -> comment.getParentComment() == null)
-                .map(comment -> commentMapper.commentToCommentResponseDto(comment, blockedUserIdList, loggedInUserId, userService))
+                .map(comment -> {
+                    boolean isLiked = commentService.isUserLikedComment(loggedInUserId, comment.getId());
+                    boolean isCommentAuthor = commentService.isCommentAuthor(loggedInUserId, comment.getId());
+
+                    return commentMapper.commentToCommentResponseDto(
+                            comment, blockedUserIdList, isLiked, isCommentAuthor, loggedInUserId, userService, commentService
+                    );
+                })
                 .collect(Collectors.toList());
     }
 

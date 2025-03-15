@@ -16,4 +16,6 @@ public interface CommentService {
     Page<Comment> getCommentsByPost(Long postId, Pageable pageable, SortOption sortOption);
     void toggleCommentLike(Long commentId, String userId);
     String generateAnonymousNickname(Long postId, String userId);
+    boolean isUserLikedComment(String userId, Long commentId);
+    boolean isCommentAuthor(String userId, Long commentId);
 }
