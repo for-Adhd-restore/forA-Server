@@ -125,6 +125,7 @@ public class PostController {
                         postScrapFilterService.isUserScrappedPost(userId, post.getId()),
                         postLikeFilterService.isUserLikedPost(userId, post.getId()),
                         post.getUser().getId().equals(userId), userId))
+                .filter(postResponseDto -> postResponseDto.getIsBlocked() == null || !postResponseDto.getIsBlocked())
                 .toList();
 
         return ResponseEntity.ok(new PostListResponseDto(postResponseDtoList, PagingResponse.from(postPage)));
@@ -144,6 +145,7 @@ public class PostController {
                         postScrapFilterService.isUserScrappedPost(userId, post.getId()),
                         postLikeFilterService.isUserLikedPost(userId, post.getId()),
                         post.getUser().getId().equals(userId), userId))
+                .filter(postResponseDto -> postResponseDto.getIsBlocked() == null || !postResponseDto.getIsBlocked())
                 .toList();
 
         return ResponseEntity.ok(new PostListResponseDto(postResponseDtoList, PagingResponse.from(postPage)));
