@@ -38,8 +38,11 @@ public class CommentController {
         Comment comment = commentService.getComment(commentId);
         List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);
 
+        boolean isLiked = commentService.isUserLikedComment(userId, commentId);
+        boolean isCommentAuthor = commentService.isCommentAuthor(userId, commentId);
+
         return ResponseEntity.ok(
-                commentMapper.commentToCommentResponseDto(comment, blockedUserIdList, userId, userService)
+                commentMapper.commentToCommentResponseDto(comment, blockedUserIdList, isLiked, isCommentAuthor, userId, userService, commentService)
         );
     }
 
@@ -53,8 +56,11 @@ public class CommentController {
         Comment createdComment = commentService.createComment(comment, userId);
         List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);
 
+        boolean isLiked = commentService.isUserLikedComment(userId, createdComment.getId());
+        boolean isCommentAuthor = commentService.isCommentAuthor(userId, createdComment.getId());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                commentMapper.commentToCommentResponseDto(createdComment, blockedUserIdList, userId, userService) // ✅ userService 추가
+                commentMapper.commentToCommentResponseDto(createdComment, blockedUserIdList, isLiked, isCommentAuthor, userId, userService, commentService)
         );
     }
 
@@ -87,8 +93,11 @@ public class CommentController {
 
         List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);
 
+        boolean isLiked = commentService.isUserLikedComment(userId, updatedComment.getId());
+        boolean isCommentAuthor = commentService.isCommentAuthor(userId, updatedComment.getId());
+
         return ResponseEntity.ok(
-                commentMapper.commentToCommentResponseDto(updatedComment, blockedUserIdList, userId, userService) // ✅ userService 추가
+                commentMapper.commentToCommentResponseDto(updatedComment, blockedUserIdList, isLiked, isCommentAuthor, userId, userService, commentService)
         );
     }
 
@@ -126,7 +135,12 @@ public class CommentController {
         List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);
 
         List<CommentListResponseDto.CommentResponseDto> commentList = comments.getContent().stream()
-                .map(comment -> commentMapper.commentToCommentResponseDto(comment, blockedUserIdList, userId, userService))
+                .map(comment -> {
+                    boolean isLiked = commentService.isUserLikedComment(userId, comment.getId());
+                    boolean isCommentAuthor = commentService.isCommentAuthor(userId, comment.getId());
+
+                    return commentMapper.commentToCommentResponseDto(comment, blockedUserIdList, isLiked, isCommentAuthor, userId, userService, commentService);
+                })
                 .toList();
 
         PagingResponse pagingResponse = PagingResponse.from(comments);
@@ -138,7 +152,6 @@ public class CommentController {
 
         return ResponseEntity.ok(response);
     }
-
 
     // 댓글 좋아요 토글
     @PostMapping("/{commentId}/like")

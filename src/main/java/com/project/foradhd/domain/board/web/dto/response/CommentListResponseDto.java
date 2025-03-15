@@ -35,6 +35,7 @@ public class CommentListResponseDto {
         private final String nickname;
         private final String profileImage;
         private Boolean isBlocked;
+        private final Boolean isLiked;
         private final Boolean isCommentAuthor;
     }
 }
