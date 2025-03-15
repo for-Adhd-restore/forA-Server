@@ -21,7 +21,7 @@ public class CommentLikeFilter extends BaseTimeEntity {
     @Column(name = "comment_like_filter_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", referencedColumnName = "comment_id")
     private Comment comment;
 
