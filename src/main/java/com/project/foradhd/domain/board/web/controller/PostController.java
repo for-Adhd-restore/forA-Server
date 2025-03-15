@@ -226,6 +226,7 @@ public class PostController {
                 .map(post -> postMapper.toPostRankingResponseDto(
                         post, blockedUserIdList
                 ))
+                .filter(postRankingResponseDto -> postRankingResponseDto.getIsBlocked() == null || !postRankingResponseDto.getIsBlocked())
                 .toList();
 
         PagingResponse pagingResponse = PagingResponse.from(postPage);
@@ -253,6 +254,7 @@ public class PostController {
                 .map(post -> postMapper.toPostRankingResponseDto(
                         post, blockedUserIdList
                 ))
+                .filter(postRankingResponseDto -> postRankingResponseDto.getIsBlocked() == null || !postRankingResponseDto.getIsBlocked())
                 .toList();
 
         PagingResponse pagingResponse = PagingResponse.from(postPage);
