@@ -1,13 +1,10 @@
 package com.project.foradhd.domain.board.web.controller;
 
 import com.project.foradhd.domain.board.business.service.*;
-import com.project.foradhd.domain.board.business.service.dto.in.ReportPostData;
-import com.project.foradhd.domain.board.persistence.entity.Comment;
+import com.project.foradhd.domain.board.business.dto.in.ReportPostData;
 import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.persistence.entity.PostScrapFilter;
-import com.project.foradhd.domain.board.persistence.entity.ReportPost;
 import com.project.foradhd.domain.board.persistence.enums.Category;
-import com.project.foradhd.domain.board.persistence.enums.HandleReport;
 import com.project.foradhd.domain.board.persistence.enums.Report;
 import com.project.foradhd.domain.board.persistence.enums.SortOption;
 import com.project.foradhd.domain.board.web.dto.request.HandleReportRequest;

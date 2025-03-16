@@ -1,7 +1,7 @@
 package com.project.foradhd.domain.board.web.mapper;
 
 import com.project.foradhd.domain.board.business.service.CommentService;
-import com.project.foradhd.domain.board.business.service.dto.in.ReportPostData;
+import com.project.foradhd.domain.board.business.dto.in.ReportPostData;
 import com.project.foradhd.domain.board.persistence.entity.Comment;
 import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.web.dto.PostDto;
