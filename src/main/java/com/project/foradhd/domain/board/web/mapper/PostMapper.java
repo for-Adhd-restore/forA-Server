@@ -71,7 +71,8 @@ public interface PostMapper {
     @Mapping(source = "post.scrapCount", target = "scrapCount")
     @Mapping(source = "post.viewCount", target = "viewCount")
     @Mapping(source = "post.category", target = "category")
-    @Mapping(target = "comments", expression = "java(mapCommentList(post.getComments(), blockedUserIdList, loggedInUserId, userService, commentService))")
+    @Mapping(target = "comments", ignore = true)
+    //@Mapping(target = "comments", expression = "java(mapCommentList(post.getComments(), blockedUserIdList, loggedInUserId, userService, commentService))")
     @Mapping(source = "isScrapped", target = "isScrapped")
     @Mapping(source = "isLiked", target = "isLiked")
     @Mapping(source = "isAuthor", target = "isAuthor")
@@ -88,6 +89,31 @@ public interface PostMapper {
             String loggedInUserId,
             CommentService commentService
     );
+    @AfterMapping
+    default void setComments(
+            @MappingTarget PostListResponseDto.PostResponseDto.PostResponseDtoBuilder dtoBuilder,
+            Post post,
+            @Context UserService userService,
+            @Context CommentService commentService,
+            @Context CommentMapper commentMapper,
+            @Context List<String> blockedUserIdList,
+            @Context String loggedInUserId
+    ) {
+        List<CommentListResponseDto.CommentResponseDto> mappedComments = post.getComments().stream()
+                .filter(comment -> comment.getParentComment() == null) // 부모 댓글만 반환
+                .map(comment -> {
+                    boolean isLiked = commentService.isUserLikedComment(loggedInUserId, comment.getId());
+                    boolean isCommentAuthor = commentService.isCommentAuthor(loggedInUserId, comment.getId());
+
+                    return commentMapper.commentToCommentResponseDto(
+                            comment, blockedUserIdList, isLiked, isCommentAuthor, loggedInUserId, userService, commentService
+                    );
+                })
+                .collect(Collectors.toList());
+
+        dtoBuilder.comments(mappedComments);
+    }
+
 
     // ✅ 닉네임 가져오는 함수
     default String getNickname(Post post, UserService userService) {
