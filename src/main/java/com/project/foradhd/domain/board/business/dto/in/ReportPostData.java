@@ -1,4 +1,4 @@
-package com.project.foradhd.domain.board.business.service.dto.in;
+package com.project.foradhd.domain.board.business.dto.in;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.project.foradhd.domain.board.persistence.entity.Comment;
