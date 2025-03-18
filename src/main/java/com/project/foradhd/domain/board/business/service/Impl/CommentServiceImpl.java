@@ -6,6 +6,7 @@ import com.project.foradhd.domain.board.persistence.entity.CommentLikeFilter;
 import com.project.foradhd.domain.board.persistence.enums.SortOption;
 import com.project.foradhd.domain.board.persistence.repository.CommentLikeFilterRepository;
 import com.project.foradhd.domain.board.persistence.repository.CommentRepository;
+import com.project.foradhd.domain.board.persistence.repository.PostRepository;
 import com.project.foradhd.domain.board.web.dto.response.PostListResponseDto;
 import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.domain.user.persistence.entity.User;
@@ -31,6 +32,7 @@ public class CommentServiceImpl implements CommentService {
     private final UserService userService;
     private final CommentRepository commentRepository;
     private final CommentLikeFilterRepository commentLikeFilterRepository;
+    private final PostRepository postRepository;
 
     @Override
     @Transactional
@@ -56,6 +58,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public Comment createComment(Comment comment, String userId) {
+        Long postId = comment.getPost().getId();
+        boolean postExists = postRepository.existsById(postId);
+
+        if (!postExists) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_POST);
+        }
         UserProfile userProfile = userService.getUserProfile(userId);
 
         Comment.CommentBuilder commentBuilder = comment.toBuilder().user(User.builder().id(userId).build());
