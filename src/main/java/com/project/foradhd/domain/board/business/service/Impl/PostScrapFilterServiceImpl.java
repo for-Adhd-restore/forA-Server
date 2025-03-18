@@ -20,6 +20,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.project.foradhd.global.exception.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -34,7 +36,7 @@ public class PostScrapFilterServiceImpl implements PostScrapFilterService {
     @Transactional
     public void toggleScrap(Long postId, String userId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_POST));
+                .orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
         User user = userService.getUser(userId);
 
         postScrapFilterRepository.findByPostIdAndUserId(postId, userId)
@@ -57,12 +59,28 @@ public class PostScrapFilterServiceImpl implements PostScrapFilterService {
 
     @Override
     public Page<PostScrapFilter> getScrapsByUserAndCategory(String userId, Category category, Pageable pageable, SortOption sortOption) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BusinessException(NOT_FOUND_USER);
+        }
+        if (category == null) {
+            throw new BusinessException(INVALID_REQUEST);
+        }
+
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), getSortByOption(sortOption));
-        return postScrapFilterRepository.findByUserIdAndCategory(userId, category, sortedPageable);
+        Page<PostScrapFilter> scraps = postScrapFilterRepository.findByUserIdAndCategory(userId, category, sortedPageable);
+
+        if (scraps.isEmpty()) {
+            throw new BusinessException(NOT_FOUND_POST);
+        }
+        return scraps;
     }
 
     @Override
     public long getCommentCount(Long postId) {
+        if (!postRepository.existsById(postId)) {
+            throw new BusinessException(NOT_FOUND_POST);
+        }
+
         long commentCount = commentRepository.countByPostId(postId);
         long replyCount = commentRepository.countByParentCommentId(postId);
         return commentCount + replyCount;
@@ -70,6 +88,12 @@ public class PostScrapFilterServiceImpl implements PostScrapFilterService {
 
     @Transactional
     public boolean isUserScrappedPost(String userId, Long postId) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BusinessException(NOT_FOUND_USER);
+        }
+        if (!postRepository.existsById(postId)) {
+            throw new BusinessException(NOT_FOUND_POST);
+        }
         return postScrapFilterRepository.existsByUserIdAndPostId(userId, postId);
     }
 
