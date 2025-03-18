@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.project.foradhd.global.exception.ErrorCode.NOT_FOUND_COMMENT;
+import static com.project.foradhd.global.exception.ErrorCode.*;
 import static org.springframework.data.jpa.repository.query.QueryUtils.applySorting;
 
 @RequiredArgsConstructor
@@ -97,8 +97,15 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public Comment updateComment(Long commentId, String content, boolean anonymous, String userId) {
+        if (commentId == null || userId == null || userId.isEmpty()) {
+            throw new BusinessException(INVALID_REQUEST);
+        }
         Comment existingComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(NOT_FOUND_COMMENT));
+        // 댓글 작성자가 아니면 수정 불가
+        if (!existingComment.getUser().getId().equals(userId)) {
+            throw new BusinessException(ACCESS_DENIED);
+        }
 
         // 댓글 수정
         Comment.CommentBuilder updatedCommentBuilder = existingComment.toBuilder()
@@ -151,6 +158,13 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void toggleCommentLike(Long commentId, String userId) {
+        if (commentId == null || userId == null || userId.isEmpty()) {
+            throw new BusinessException(INVALID_REQUEST);
+        }
+
+        if (!commentRepository.existsById(commentId)) {
+            throw new BusinessException(NOT_FOUND_COMMENT);
+        }
         Optional<CommentLikeFilter> likeFilter = commentLikeFilterRepository.findByCommentIdAndUserId(commentId, userId);
         if (likeFilter.isPresent()) {
             commentLikeFilterRepository.deleteByCommentIdAndUserId(commentId, userId);
