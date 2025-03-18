@@ -125,8 +125,8 @@ public class PostController {
                         postLikeFilterService.isUserLikedPost(userId, post.getId()),
                         post.getUser().getId().equals(userId),
                         userId,
-                        commentService  // ✅ CommentService 추가
-                ))
+                        commentService ))
+                .filter(postResponseDto -> postResponseDto.getIsBlocked() == null || !postResponseDto.getIsBlocked())
                 .toList();
 
         return ResponseEntity.ok(new PostListResponseDto(postResponseDtoList, PagingResponse.from(postPage)));
@@ -149,8 +149,8 @@ public class PostController {
                         postLikeFilterService.isUserLikedPost(userId, post.getId()),
                         post.getUser().getId().equals(userId),
                         userId,
-                        commentService  // ✅ CommentService 추가
-                ))
+                        commentService ))
+                .filter(postResponseDto -> postResponseDto.getIsBlocked() == null || !postResponseDto.getIsBlocked())
                 .toList();
 
         return ResponseEntity.ok(new PostListResponseDto(postResponseDtoList, PagingResponse.from(postPage)));
@@ -231,6 +231,7 @@ public class PostController {
                 .map(post -> postMapper.toPostRankingResponseDto(
                         post, blockedUserIdList
                 ))
+                .filter(postRankingResponseDto -> postRankingResponseDto.getIsBlocked() == null || !postRankingResponseDto.getIsBlocked())
                 .toList();
 
         PagingResponse pagingResponse = PagingResponse.from(postPage);
@@ -258,6 +259,7 @@ public class PostController {
                 .map(post -> postMapper.toPostRankingResponseDto(
                         post, blockedUserIdList
                 ))
+                .filter(postRankingResponseDto -> postRankingResponseDto.getIsBlocked() == null || !postRankingResponseDto.getIsBlocked())
                 .toList();
 
         PagingResponse pagingResponse = PagingResponse.from(postPage);
