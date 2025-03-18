@@ -33,6 +33,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentLikeFilterRepository commentLikeFilterRepository;
 
     @Override
+    @Transactional
     public Comment getComment(Long commentId) {
         Comment comment = commentRepository.findByIdFetch(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_COMMENT));
@@ -126,6 +127,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public Page<PostListResponseDto.PostResponseDto> getMyCommentedPosts(String userId, Pageable pageable, SortOption sortOption) {
         Sort sort = switch (sortOption) {
             case OLDEST_FIRST -> Sort.by(Sort.Direction.ASC, "createdAt");

@@ -3,6 +3,7 @@ package com.project.foradhd.domain.board.persistence.repository;
 import com.project.foradhd.domain.board.persistence.entity.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -38,8 +39,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     long countByPostIdAndAnonymous(Long postId, boolean anonymous);
     List<Comment> findByPostIdAndUserIdAndAnonymous(Long postId, String userId, boolean anonymous);
 
-    @Query("select pc from Comment pc join fetch pc.childComments where pc.id = :commentId")
-    Optional<Comment> findByIdFetch(Long commentId);
+    @EntityGraph(attributePaths = {"childComments"})
+    @Query("SELECT c FROM Comment c WHERE c.id = :commentId")
+    Optional<Comment> findByIdFetch(@Param("commentId") Long commentId);
 
     @Modifying
     @Query("UPDATE Comment c SET c.parentComment = null WHERE c.parentComment.id = :parentId")
