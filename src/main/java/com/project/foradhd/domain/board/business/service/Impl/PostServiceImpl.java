@@ -96,19 +96,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<Post> getUserPostsByCategory(String userId, Category category, Pageable pageable, SortOption sortOption) {
-        if (userId == null || userId.isEmpty()) {
-            throw new BusinessException(NOT_FOUND_USER);
+        if (sortOption == null) {
+            sortOption = SortOption.NEWEST_FIRST; // 기본 정렬 설정
         }
         if (category == null) {
-            throw new BusinessException(INVALID_REQUEST);
+            return postRepository.findAllByUserId(userId, sortOption.name(), pageable);
+        } else {
+            return postRepository.findAllByUserIdAndCategoryWithSort(userId, category, sortOption.name(), pageable);
         }
-        pageable = applySorting(pageable, sortOption);
-        Page<Post> posts = postRepository.findByUserIdAndCategory(userId, category, pageable);
-
-        if (posts.isEmpty()) {
-            throw new BusinessException(NOT_FOUND_POST);
-        }
-        return posts;
     }
 
     // 글 카테고리별 정렬

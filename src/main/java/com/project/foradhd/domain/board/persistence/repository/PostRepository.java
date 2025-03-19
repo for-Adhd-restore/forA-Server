@@ -2,6 +2,7 @@ package com.project.foradhd.domain.board.persistence.repository;
 
 import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.persistence.enums.Category;
+import com.project.foradhd.domain.board.persistence.enums.SortOption;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -52,4 +53,50 @@ public interface PostRepository extends JpaRepository<Post, Long> {
      // 📌 제목으로 게시글 검색 (페이징 적용)
     @EntityGraph(attributePaths = {"user", "user.userProfile"})
     Page<Post> findByTitleContaining(@Param("title") String title, Pageable pageable);
+
+    Page<Post> findAllByUserId(String userId, Pageable pageable);
+
+    Page<Post> findAllByUserIdAndCategory(String userId, Category category, Pageable pageable);
+
+    @Query("""
+    SELECT p FROM Post p 
+    WHERE p.user.id = :userId
+    ORDER BY 
+        CASE 
+            WHEN :sortOption = 'NEWEST_FIRST' THEN p.createdAt 
+            WHEN :sortOption = 'OLDEST_FIRST' THEN p.createdAt 
+            WHEN :sortOption = 'MOST_VIEWED' THEN p.viewCount 
+            WHEN :sortOption = 'MOST_COMMENTED' THEN SIZE(p.comments) 
+            WHEN :sortOption = 'MOST_LIKED' THEN p.likeCount 
+            ELSE p.createdAt 
+        END 
+        DESC
+""")
+    Page<Post> findAllByUserId(
+            @Param("userId") String userId,
+            @Param("sortOption") String sortOption,
+            Pageable pageable
+    );
+
+    @Query("""
+    SELECT p FROM Post p 
+    WHERE p.user.id = :userId
+    AND (:category IS NULL OR p.category = :category)
+    ORDER BY 
+        CASE 
+            WHEN :sortOption = 'NEWEST_FIRST' THEN p.createdAt
+            WHEN :sortOption = 'OLDEST_FIRST' THEN p.createdAt
+            WHEN :sortOption = 'MOST_VIEWED' THEN p.viewCount
+            WHEN :sortOption = 'MOST_COMMENTED' THEN SIZE(p.comments)
+            WHEN :sortOption = 'MOST_LIKED' THEN p.likeCount
+            ELSE p.createdAt
+        END DESC
+""")
+    Page<Post> findAllByUserIdAndCategoryWithSort(
+            @Param("userId") String userId,
+            @Param("category") Category category,
+            @Param("sortOption") String sortOption,
+            Pageable pageable
+    );
+
 }
