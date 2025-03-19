@@ -3,9 +3,11 @@ package com.project.foradhd.domain.board.business.service.Impl;
 import com.project.foradhd.domain.board.business.service.CommentService;
 import com.project.foradhd.domain.board.persistence.entity.Comment;
 import com.project.foradhd.domain.board.persistence.entity.CommentLikeFilter;
+import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.persistence.enums.SortOption;
 import com.project.foradhd.domain.board.persistence.repository.CommentLikeFilterRepository;
 import com.project.foradhd.domain.board.persistence.repository.CommentRepository;
+import com.project.foradhd.domain.board.persistence.repository.PostRepository;
 import com.project.foradhd.domain.board.web.dto.response.PostListResponseDto;
 import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.domain.user.persistence.entity.User;
@@ -20,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.project.foradhd.global.exception.ErrorCode.NOT_FOUND_COMMENT;
+import static com.project.foradhd.global.exception.ErrorCode.*;
 import static org.springframework.data.jpa.repository.query.QueryUtils.applySorting;
 
 @RequiredArgsConstructor
@@ -31,8 +33,10 @@ public class CommentServiceImpl implements CommentService {
     private final UserService userService;
     private final CommentRepository commentRepository;
     private final CommentLikeFilterRepository commentLikeFilterRepository;
+    private final PostRepository postRepository;
 
     @Override
+    @Transactional
     public Comment getComment(Long commentId) {
         Comment comment = commentRepository.findByIdFetch(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_COMMENT));
@@ -55,6 +59,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public Comment createComment(Comment comment, String userId) {
+        Long postId = comment.getPost().getId();
+        boolean postExists = postRepository.existsById(postId);
+
+        if (!postExists) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_POST);
+        }
         UserProfile userProfile = userService.getUserProfile(userId);
 
         Comment.CommentBuilder commentBuilder = comment.toBuilder().user(User.builder().id(userId).build());
@@ -97,8 +107,15 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public Comment updateComment(Long commentId, String content, boolean anonymous, String userId) {
+        if (commentId == null || userId == null || userId.isEmpty()) {
+            throw new BusinessException(INVALID_REQUEST);
+        }
         Comment existingComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(NOT_FOUND_COMMENT));
+        // 댓글 작성자가 아니면 수정 불가
+        if (!existingComment.getUser().getId().equals(userId)) {
+            throw new BusinessException(ACCESS_DENIED);
+        }
 
         // 댓글 수정
         Comment.CommentBuilder updatedCommentBuilder = existingComment.toBuilder()
@@ -119,26 +136,22 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Page<PostListResponseDto.PostResponseDto> getMyCommentedPosts(String userId, Pageable pageable, SortOption sortOption) {
-        Sort sort = switch (sortOption) {
-            case OLDEST_FIRST -> Sort.by(Sort.Direction.ASC, "createdAt");
-            case NEWEST_FIRST -> Sort.by(Sort.Direction.DESC, "createdAt");
-            default -> Sort.by(Sort.Direction.DESC, "createdAt");
-        };
-        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+    @Transactional
+    public Page<Post> getMyCommentedPosts(String userId, Pageable pageable, SortOption sortOption) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BusinessException(NOT_FOUND_USER);
+        }
 
-        Page<Comment> userComments = commentRepository.findByUserId(userId, sortedPageable);
-        List<PostListResponseDto.PostResponseDto> posts = userComments.stream()
-                .map(Comment::getPost)
-                .distinct()
-                .map(post -> PostListResponseDto.PostResponseDto.builder()
-                        .id(post.getId())
-                        .title(post.getTitle())
-                        .content(post.getContent())
-                        .createdAt(post.getCreatedAt())
-                        .build())
-                .toList();
-        return new PageImpl<>(posts, sortedPageable, userComments.getTotalElements());
+        pageable = applySorting(pageable, sortOption);
+
+        // 사용자가 작성한 댓글이 포함된 글 가져오기
+        Page<Post> posts = postRepository.findByCommentsUserId(userId, pageable);
+
+        if (posts.isEmpty()) {
+            throw new BusinessException(NOT_FOUND_POST);
+        }
+
+        return posts;
     }
 
     @Override
@@ -151,6 +164,13 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void toggleCommentLike(Long commentId, String userId) {
+        if (commentId == null || userId == null || userId.isEmpty()) {
+            throw new BusinessException(INVALID_REQUEST);
+        }
+
+        if (!commentRepository.existsById(commentId)) {
+            throw new BusinessException(NOT_FOUND_COMMENT);
+        }
         Optional<CommentLikeFilter> likeFilter = commentLikeFilterRepository.findByCommentIdAndUserId(commentId, userId);
         if (likeFilter.isPresent()) {
             commentLikeFilterRepository.deleteByCommentIdAndUserId(commentId, userId);

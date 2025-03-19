@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.project.foradhd.global.exception.ErrorCode.NOT_FOUND_POST;
+import static com.project.foradhd.global.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +40,9 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public Post createPost(Post post) {
+        if (post == null) {
+            throw new BusinessException(INVALID_REQUEST);
+        }
         return postRepository.save(post);
     }
 
@@ -47,6 +50,10 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public Post updatePost(Post post) {
         Post existingPost = getPost(post.getId());
+
+        if (existingPost == null) {
+            throw new BusinessException(NOT_FOUND_POST);
+        }
 
         Post updatedPost = existingPost.toBuilder()
                 .title(post.getTitle())
@@ -61,6 +68,9 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void deletePost(Long postId) {
+        if (!postRepository.existsById(postId)) {
+            throw new BusinessException(NOT_FOUND_POST);
+        }
         postRepository.deleteById(postId);
     }
 
@@ -72,20 +82,42 @@ public class PostServiceImpl implements PostService {
     // 나의 글
     @Override
     public Page<Post> getUserPosts(String userId, Pageable pageable, SortOption sortOption) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BusinessException(NOT_FOUND_USER);
+        }
         pageable = applySorting(pageable, sortOption);
-        return postRepository.findByUserIdWithUserProfile(userId, pageable);
+        Page<Post> posts = postRepository.findByUserId(userId, pageable);
+
+        if (posts.isEmpty()) {
+            throw new BusinessException(NOT_FOUND_POST);
+        }
+        return posts;
     }
 
     @Override
     public Page<Post> getUserPostsByCategory(String userId, Category category, Pageable pageable, SortOption sortOption) {
-        pageable = applySorting(pageable, sortOption);
-        return postRepository.findByUserIdAndCategoryWithUserProfile(userId, category, pageable);
+        if (sortOption == null) {
+            sortOption = SortOption.NEWEST_FIRST; // 기본 정렬 설정
+        }
+        if (category == null) {
+            return postRepository.findAllByUserId(userId, sortOption.name(), pageable);
+        } else {
+            return postRepository.findAllByUserIdAndCategoryWithSort(userId, category, sortOption.name(), pageable);
+        }
     }
 
     // 글 카테고리별 정렬
     @Override
     public Page<Post> listByCategory(Category category, Pageable pageable) {
-        return postRepository.findByCategoryWithUserProfile(category, pageable);
+        if (category == null) {
+            throw new BusinessException(INVALID_REQUEST);
+        }
+        Page<Post> posts = postRepository.findByCategory(category, pageable);
+
+        if (posts.isEmpty()) {
+            throw new BusinessException(NOT_FOUND_POST);
+        }
+        return posts;
     }
 
     // 글 조회수 증가
@@ -101,7 +133,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public Page<Post> getTopPosts(Pageable pageable) {
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), 10);
-        Page<Post> topPosts = postRepository.findTopPostsWithUserProfile(pageRequest);
+        Page<Post> topPosts = postRepository.findTopPosts(pageRequest);
         notifyUsersAboutTopPosts(topPosts.getContent());
         return topPosts;
     }
@@ -110,7 +142,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public Page<Post> getTopPostsByCategory(Category category, Pageable pageable) {
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), 10);
-        Page<Post> topPosts = postRepository.findTopPostsByCategoryWithUserProfile(category, pageRequest);
+        Page<Post> topPosts = postRepository.findTopPostsByCategory(category, pageRequest);
         notifyUsersAboutTopPosts(topPosts.getContent());
         return topPosts;
     }
@@ -164,6 +196,6 @@ public class PostServiceImpl implements PostService {
     public Page<Post> searchPostsByTitle(String title, String userId, Pageable pageable) {
         // 검색어 저장 로직 추가
         postSearchHistoryService.saveSearchTerm(userId, title);
-        return postRepository.findByTitleContainingWithUserProfile(title, pageable);
+        return postRepository.findByTitleContaining(title, pageable);
     }
 }

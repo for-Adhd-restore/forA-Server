@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.project.foradhd.global.exception.ErrorCode.INVALID_REQUEST;
 import static com.project.foradhd.global.exception.ErrorCode.NOT_FOUND_POST;
 
 
@@ -54,6 +55,10 @@ public class PostLikeFilterServiceImpl implements PostLikeFilterService {
 
     @Override
     public Page<Post> getLikedPostsByUser(String userId, Pageable pageable) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BusinessException(INVALID_REQUEST);
+        }
+
         return postLikeFilterRepository.findPostsLikedByUser(userId, pageable);
     }
 }

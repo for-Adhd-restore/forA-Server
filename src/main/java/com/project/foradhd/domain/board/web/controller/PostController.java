@@ -159,7 +159,7 @@ public class PostController {
     // 내가 작성한 게시글 조회 api
     @GetMapping("/my-posts")
     public ResponseEntity<PostListResponseDto> getUserPostsByCategory(
-            @AuthUserId String userId, @RequestParam Category category, Pageable pageable, @RequestParam SortOption sortOption, CommentService commentService) {
+            @AuthUserId String userId, @RequestParam(required = false) Category category, Pageable pageable, @RequestParam(required = false) SortOption sortOption, CommentService commentService) {
 
         Page<Post> userPosts = postService.getUserPostsByCategory(userId, category, pageable, sortOption);
         List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);

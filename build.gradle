@@ -98,6 +98,8 @@ dependencies {
 
 	//Spring AOP
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
 tasks.named('test') {
