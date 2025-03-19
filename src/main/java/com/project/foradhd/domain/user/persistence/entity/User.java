@@ -27,6 +27,9 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_id", columnDefinition = "varchar(32)")
     private String id;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserProfile userProfile;
+
     @Column(nullable = false, length = 100)
     private String email;
 

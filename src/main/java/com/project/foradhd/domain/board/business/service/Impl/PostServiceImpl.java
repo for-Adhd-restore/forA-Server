@@ -86,7 +86,7 @@ public class PostServiceImpl implements PostService {
             throw new BusinessException(NOT_FOUND_USER);
         }
         pageable = applySorting(pageable, sortOption);
-        Page<Post> posts = postRepository.findByUserIdWithUserProfile(userId, pageable);
+        Page<Post> posts = postRepository.findByUserId(userId, pageable);
 
         if (posts.isEmpty()) {
             throw new BusinessException(NOT_FOUND_POST);
@@ -103,7 +103,7 @@ public class PostServiceImpl implements PostService {
             throw new BusinessException(INVALID_REQUEST);
         }
         pageable = applySorting(pageable, sortOption);
-        Page<Post> posts = postRepository.findByUserIdAndCategoryWithUserProfile(userId, category, pageable);
+        Page<Post> posts = postRepository.findByUserIdAndCategory(userId, category, pageable);
 
         if (posts.isEmpty()) {
             throw new BusinessException(NOT_FOUND_POST);
@@ -117,7 +117,7 @@ public class PostServiceImpl implements PostService {
         if (category == null) {
             throw new BusinessException(INVALID_REQUEST);
         }
-        Page<Post> posts = postRepository.findByCategoryWithUserProfile(category, pageable);
+        Page<Post> posts = postRepository.findByCategory(category, pageable);
 
         if (posts.isEmpty()) {
             throw new BusinessException(NOT_FOUND_POST);
@@ -138,7 +138,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public Page<Post> getTopPosts(Pageable pageable) {
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), 10);
-        Page<Post> topPosts = postRepository.findTopPostsWithUserProfile(pageRequest);
+        Page<Post> topPosts = postRepository.findTopPosts(pageRequest);
         notifyUsersAboutTopPosts(topPosts.getContent());
         return topPosts;
     }
@@ -147,7 +147,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public Page<Post> getTopPostsByCategory(Category category, Pageable pageable) {
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), 10);
-        Page<Post> topPosts = postRepository.findTopPostsByCategoryWithUserProfile(category, pageRequest);
+        Page<Post> topPosts = postRepository.findTopPostsByCategory(category, pageRequest);
         notifyUsersAboutTopPosts(topPosts.getContent());
         return topPosts;
     }
@@ -201,6 +201,6 @@ public class PostServiceImpl implements PostService {
     public Page<Post> searchPostsByTitle(String title, String userId, Pageable pageable) {
         // 검색어 저장 로직 추가
         postSearchHistoryService.saveSearchTerm(userId, title);
-        return postRepository.findByTitleContainingWithUserProfile(title, pageable);
+        return postRepository.findByTitleContaining(title, pageable);
     }
 }
