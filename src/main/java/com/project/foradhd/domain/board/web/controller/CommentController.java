@@ -2,11 +2,13 @@ package com.project.foradhd.domain.board.web.controller;
 
 import com.project.foradhd.domain.board.persistence.entity.Comment;
 import com.project.foradhd.domain.board.business.service.CommentService;
+import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.persistence.enums.SortOption;
 import com.project.foradhd.domain.board.web.dto.request.CreateCommentRequestDto;
 import com.project.foradhd.domain.board.web.dto.response.CommentListResponseDto;
 import com.project.foradhd.domain.board.web.dto.response.PostListResponseDto;
 import com.project.foradhd.domain.board.web.mapper.CommentMapper;
+import com.project.foradhd.domain.board.web.mapper.PostMapper;
 import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.global.AuthUserId;
 import com.project.foradhd.global.paging.web.dto.response.PagingResponse;
@@ -28,6 +30,7 @@ public class CommentController {
     private final CommentService commentService;
     private final CommentMapper commentMapper;
     private final UserService userService;
+    private final PostMapper postMapper;
 
     // 개별 댓글 조회 API
     @GetMapping("/{commentId}")
@@ -107,18 +110,17 @@ public class CommentController {
             @AuthUserId String userId,
             Pageable pageable,
             @RequestParam(defaultValue = "NEWEST_FIRST") SortOption sortOption) {
-        Page<PostListResponseDto.PostResponseDto> posts = commentService.getMyCommentedPosts(userId, pageable, sortOption);
-        List<PostListResponseDto.PostResponseDto> postList = posts.getContent();
 
-        PagingResponse pagingResponse = PagingResponse.from(posts);
+        Page<Post> posts = commentService.getMyCommentedPosts(userId, pageable, sortOption);
+        List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);
 
-        PostListResponseDto response = PostListResponseDto.builder()
-                .postList(postList)
-                .paging(pagingResponse)
-                .build();
+        List<PostListResponseDto.PostResponseDto> postResponseDtoList = posts.getContent().stream()
+                .map(post -> postMapper.toPostResponseDto(post, userService, blockedUserIdList, false, false, true, userId, commentService))
+                .toList();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new PostListResponseDto(postResponseDtoList, PagingResponse.from(posts)));
     }
+
     // 글별 댓글 모아보기
     @GetMapping("/posts/{postId}")
     public ResponseEntity<CommentListResponseDto> getCommentsByPost(

@@ -3,6 +3,7 @@ package com.project.foradhd.domain.board.business.service.Impl;
 import com.project.foradhd.domain.board.business.service.CommentService;
 import com.project.foradhd.domain.board.persistence.entity.Comment;
 import com.project.foradhd.domain.board.persistence.entity.CommentLikeFilter;
+import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.persistence.enums.SortOption;
 import com.project.foradhd.domain.board.persistence.repository.CommentLikeFilterRepository;
 import com.project.foradhd.domain.board.persistence.repository.CommentRepository;
@@ -136,26 +137,21 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Page<PostListResponseDto.PostResponseDto> getMyCommentedPosts(String userId, Pageable pageable, SortOption sortOption) {
-        Sort sort = switch (sortOption) {
-            case OLDEST_FIRST -> Sort.by(Sort.Direction.ASC, "createdAt");
-            case NEWEST_FIRST -> Sort.by(Sort.Direction.DESC, "createdAt");
-            default -> Sort.by(Sort.Direction.DESC, "createdAt");
-        };
-        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+    public Page<Post> getMyCommentedPosts(String userId, Pageable pageable, SortOption sortOption) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BusinessException(NOT_FOUND_USER);
+        }
 
-        Page<Comment> userComments = commentRepository.findByUserId(userId, sortedPageable);
-        List<PostListResponseDto.PostResponseDto> posts = userComments.stream()
-                .map(Comment::getPost)
-                .distinct()
-                .map(post -> PostListResponseDto.PostResponseDto.builder()
-                        .id(post.getId())
-                        .title(post.getTitle())
-                        .content(post.getContent())
-                        .createdAt(post.getCreatedAt())
-                        .build())
-                .toList();
-        return new PageImpl<>(posts, sortedPageable, userComments.getTotalElements());
+        pageable = applySorting(pageable, sortOption);
+
+        // 사용자가 작성한 댓글이 포함된 글 가져오기
+        Page<Post> posts = postRepository.findByCommentsUserId(userId, pageable);
+
+        if (posts.isEmpty()) {
+            throw new BusinessException(NOT_FOUND_POST);
+        }
+
+        return posts;
     }
 
     @Override
