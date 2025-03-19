@@ -28,4 +28,20 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long> {
     List<Medicine> findMedicinesByUserFavorites(@Param("userId") String userId);
     @Query("SELECT m FROM Medicine m WHERE m.itemName IN :ingredientNames ORDER BY m.itemName ASC")
     List<Medicine> findByIngredientNames(@Param("ingredientNames") List<String> ingredientNames);
+
+    @Query("""
+    SELECT m FROM Medicine m
+    WHERE (:formCodeName IS NULL OR m.formCodeName = :formCodeName)
+    AND (:drugShape IS NULL OR m.drugShape = :drugShape)
+    AND (:color1 IS NULL OR 
+         (m.colorClass1 IS NOT NULL AND m.colorClass1 = :color1) OR 
+         (m.colorClass2 IS NOT NULL AND m.colorClass2 = :color1))
+    AND (:tabletType IS NULL OR m.tabletType = :tabletType)
+""")
+    List<Medicine> findByAllAttributes(
+            @Param("formCodeName") String formCodeName,
+            @Param("drugShape") String drugShape,
+            @Param("color1") String color1,
+            @Param("tabletType") TabletType tabletType
+    );
 }
