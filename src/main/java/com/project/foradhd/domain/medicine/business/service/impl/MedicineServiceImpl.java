@@ -6,6 +6,7 @@ import com.project.foradhd.domain.medicine.business.service.MedicineService;
 import com.project.foradhd.domain.medicine.persistence.entity.Medicine;
 import com.project.foradhd.domain.medicine.persistence.enums.IngredientType;
 import com.project.foradhd.domain.medicine.persistence.enums.TabletType;
+import com.project.foradhd.domain.medicine.persistence.repository.MedicineBookmarkRepository;
 import com.project.foradhd.domain.medicine.persistence.repository.MedicineRepository;
 import com.project.foradhd.domain.medicine.web.dto.MedicineDto;
 import com.project.foradhd.domain.medicine.web.mapper.MedicineMapper;
@@ -34,6 +35,7 @@ public class MedicineServiceImpl implements MedicineService {
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
     private final MedicineSearchHistoryService medicineSearchHistoryService;
+    private final MedicineBookmarkRepository medicinebookmarkRepository;
 
     @Value("${service.medicine.url}")
     private String SERVICE_URL;
@@ -157,11 +159,32 @@ public class MedicineServiceImpl implements MedicineService {
 
     // 개별 약 조회
     @Override
-    public MedicineDto getMedicineById(Long id) {
+    public MedicineDto getMedicineById(Long id, String userId) {
         Medicine medicine = medicineRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_MEDICINE));
-        return medicineMapper.toDto(medicine);
+
+        boolean isFavorite = medicinebookmarkRepository.existsByUserIdAndMedicineId(userId, id);
+
+        return MedicineDto.builder()
+                .medicineId(medicine.getId())
+                .itemSeq(medicine.getItemSeq())
+                .itemName(medicine.getItemName())
+                .entpSeq(medicine.getEntpSeq())
+                .entpName(medicine.getEntpName())
+                .chart(medicine.getChart())
+                .itemImage(medicine.getItemImage())
+                .drugShape(medicine.getDrugShape())
+                .colorClass1(medicine.getColorClass1())
+                .colorClass2(medicine.getColorClass2())
+                .classNo(medicine.getClassNo())
+                .className(medicine.getClassName())
+                .formCodeName(medicine.getFormCodeName())
+                .itemEngName(medicine.getItemEngName())
+                .rating(medicine.getRating())
+                .isFavorite(isFavorite)
+                .build();
     }
+
 
     // 약 성분별 정렬
     @Override

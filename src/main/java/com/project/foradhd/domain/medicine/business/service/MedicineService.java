@@ -15,7 +15,7 @@ public interface MedicineService {
     MedicineDto parseMedicine(String json);
     List<MedicineDto> getSortedMedicines(String sortOption, String userId);
     List<Medicine> searchByItemName(String itemName, String userId);
-    MedicineDto getMedicineById(Long id);
+    MedicineDto getMedicineById(Long id, String userId);
     List<MedicineDto> getMedicinesByIngredientType(IngredientType ingredientType);
     List<Medicine> searchByFormCodeNameShapeColorAndTabletType(String formCodeName, String shape, String color1, TabletType tabletType);
     List<String> getRecentSearchTerms(String userId);
