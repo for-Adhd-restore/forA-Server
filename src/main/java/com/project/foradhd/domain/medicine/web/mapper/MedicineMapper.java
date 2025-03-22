@@ -32,6 +32,7 @@ public interface MedicineMapper {
     @Mapping(source = "bookmark.medicine.entpName", target = "manufacturer")
     @Mapping(source = "bookmark.medicine.itemImage", target = "images")
     @Mapping(source = "bookmark.createdAt", target = "bookmarkedAt", qualifiedByName = "toEpochTime")
+    @Mapping(source = "bookmark.medicine.id", target = "medicineId")
     MedicineBookmarkResponse toResponseDto(MedicineBookmark bookmark);
     @Named("toEpochTime")
     default long toEpochTime(java.time.LocalDateTime createdAt) {

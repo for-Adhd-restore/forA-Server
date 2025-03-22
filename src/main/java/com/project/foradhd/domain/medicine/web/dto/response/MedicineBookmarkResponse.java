@@ -16,6 +16,7 @@ public class MedicineBookmarkResponse {
     private String manufacturer;
     private String images;
     private long bookmarkedAt;
+    private long medicineId;
 
     @Getter
     @Builder
