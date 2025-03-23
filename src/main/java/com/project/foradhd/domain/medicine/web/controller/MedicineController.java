@@ -98,8 +98,8 @@ public class MedicineController {
 
     // 개별 약 조회 API
     @GetMapping("/{id}")
-    public ResponseEntity<MedicineDto> getMedicineById(@PathVariable Long id) {
-        MedicineDto medicine = medicineService.getMedicineById(id);
+    public ResponseEntity<MedicineDto> getMedicineById(@PathVariable Long id, @AuthUserId String userId) {
+        MedicineDto medicine = medicineService.getMedicineById(id, userId);
         return ResponseEntity.ok(medicine);
     }
 
