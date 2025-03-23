@@ -62,16 +62,16 @@ public class PostScrapFilterServiceImpl implements PostScrapFilterService {
         if (userId == null || userId.isEmpty()) {
             throw new BusinessException(NOT_FOUND_USER);
         }
-        if (category == null) {
-            throw new BusinessException(INVALID_REQUEST);
-        }
 
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), getSortByOption(sortOption));
-        Page<PostScrapFilter> scraps = postScrapFilterRepository.findByUserIdAndCategory(userId, category, sortedPageable);
+        Page<PostScrapFilter> scraps;
 
-        if (scraps.isEmpty()) {
-            throw new BusinessException(NOT_FOUND_POST);
+        if (category == null) {
+            scraps = postScrapFilterRepository.findByUserId(userId, sortedPageable);
+        } else {
+            scraps = postScrapFilterRepository.findByUserIdAndCategory(userId, category, sortedPageable);
         }
+
         return scraps;
     }
 

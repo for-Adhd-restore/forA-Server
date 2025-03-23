@@ -175,7 +175,7 @@ public class PostController {
     @GetMapping("/scraps")
     public ResponseEntity<PostScrapFilterResponseDto> getScrapsByUserAndCategory(
             @AuthUserId String userId,
-            @RequestParam Category category,
+            @RequestParam(required = false) Category category,
             Pageable pageable,
             @RequestParam(required = false, defaultValue = "NEWEST_FIRST") SortOption sortOption) {
         Page<PostScrapFilter> scraps = postScrapFilterService.getScrapsByUserAndCategory(userId, category, pageable, sortOption);
