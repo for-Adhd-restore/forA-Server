@@ -22,16 +22,26 @@ public class MedicineReviewResponse {
     private List<String> images;
     private float grade;
     private int helpCount;
-    private List<Long> coMedications;
+    private List<CoMedicationResponse> coMedications;
     private String nickname;
     private String profileImage;
     private String ageRange;
     private Gender gender;
     private double averageGrade;
+    private String medicineName;
     @JsonSerialize(using = LocalDateTimeToEpochSecondSerializer.class)
     private LocalDateTime createdAt;
     @JsonSerialize(using = LocalDateTimeToEpochSecondSerializer.class)
     private LocalDateTime lastModifiedAt;
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class CoMedicationResponse {
+        private Long id;
+        private String name;
+    }
 
     @Getter
     @Builder
