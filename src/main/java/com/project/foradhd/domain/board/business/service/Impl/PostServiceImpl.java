@@ -32,9 +32,13 @@ public class PostServiceImpl implements PostService {
     private final SseEmitters sseEmitters;
 
     @Override
+    @Transactional
     public Post getPost(Long postId) {
-        return postRepository.findById(postId)
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
+
+        post.incrementViewCount();
+        return post;
     }
 
     @Override
