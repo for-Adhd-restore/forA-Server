@@ -36,12 +36,16 @@ public interface MedicineReviewMapper {
     MedicineReviewResponse toResponseDto(MedicineReview review, @Context UserService userService);
 
     // ✅ coMedications 매핑 메서드 추가 (List<MedicineCoMedication> → List<Long>)
-    default List<Long> mapCoMedications(List<MedicineCoMedication> coMedications) {
+    default List<MedicineReviewResponse.CoMedicationResponse> mapCoMedications(List<MedicineCoMedication> coMedications) {
         if (coMedications == null) return List.of();
         return coMedications.stream()
-                .map(coMedication -> coMedication.getMedicine().getId())
+                .map(coMedication -> MedicineReviewResponse.CoMedicationResponse.builder()
+                        .id(coMedication.getMedicine().getId())
+                        .name(coMedication.getMedicine().getItemName())
+                        .build())
                 .toList();
     }
+
 
     @AfterMapping
     default void setUserAndMedicine(@MappingTarget MedicineReview.MedicineReviewBuilder reviewBuilder,
