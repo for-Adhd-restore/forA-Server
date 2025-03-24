@@ -158,7 +158,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public Page<Comment> getCommentsByPost(Long postId, Pageable pageable, SortOption sortOption) {
         pageable = applySorting(pageable, sortOption);
-        return commentRepository.findByPostId(postId, pageable);
+        return commentRepository.findTopLevelCommentsWithChildren(postId, pageable);
     }
 
     @Override
