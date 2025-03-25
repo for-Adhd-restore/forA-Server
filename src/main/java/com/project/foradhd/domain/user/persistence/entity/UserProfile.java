@@ -43,7 +43,7 @@ public class UserProfile extends BaseTimeEntity {
     }
 
     public void withdraw() {
-        this.nickname = "";
+        this.nickname = "withdrawn_" + this.id;
         this.profileImage = "";
     }
 }
