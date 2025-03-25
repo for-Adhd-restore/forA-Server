@@ -69,7 +69,8 @@ public enum ErrorCode {
     ALREADY_LIKED_COMMENT(CONFLICT, "이미 좋아요한 댓글입니다."),
 
     // notification
-    NOT_FOUND_NOTIFICATION(NOT_FOUND, "존재하지 않는 알림입니다.");
+    NOT_FOUND_NOTIFICATION(NOT_FOUND, "존재하지 않는 알림입니다."),
+    PASSWORD_SAME_AS_PREVIOUS(BAD_REQUEST, "기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.");
     private final HttpStatus status;
     private final String message;
 }

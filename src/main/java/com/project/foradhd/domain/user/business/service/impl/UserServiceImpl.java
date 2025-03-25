@@ -6,7 +6,6 @@ import com.project.foradhd.domain.user.business.service.UserAuthInfoService;
 import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.domain.user.persistence.entity.*;
 import com.project.foradhd.domain.user.persistence.enums.Provider;
-import com.project.foradhd.domain.user.persistence.enums.Role;
 import com.project.foradhd.domain.user.persistence.repository.*;
 import com.project.foradhd.global.exception.BusinessException;
 import java.time.LocalDate;
@@ -144,6 +143,10 @@ public class UserServiceImpl implements UserService {
     public void updatePassword(String userId, PasswordUpdateData passwordUpdateData) {
         String prevPassword = passwordUpdateData.getPrevPassword();
         String newPassword = passwordUpdateData.getPassword();
+
+        if (prevPassword.equals(newPassword)) {
+            throw new BusinessException(PASSWORD_SAME_AS_PREVIOUS);
+        }
         userAuthInfoService.validatePasswordMatches(userId, prevPassword);
         userAuthInfoService.updatePassword(userId, newPassword);
     }
