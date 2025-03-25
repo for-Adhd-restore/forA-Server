@@ -19,7 +19,7 @@ public interface PostService {
     Post updatePost(Post post);
 
     // 특정 카테고리의 게시글 목록 조회
-    Page<Post> listByCategory(Category category, Pageable pageable);
+    Page<Post> listByCategory(Category category, Pageable pageable, SortOption sortOption);
 
     // 게시글 삭제
     void deletePost(Long Id);

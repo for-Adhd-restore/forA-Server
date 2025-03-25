@@ -112,18 +112,18 @@ public class PostServiceImpl implements PostService {
 
     // 글 카테고리별 정렬
     @Override
-    public Page<Post> listByCategory(Category category, Pageable pageable) {
+    public Page<Post> listByCategory(Category category, Pageable pageable, SortOption sortOption) {
         if (category == null) {
             throw new BusinessException(INVALID_REQUEST);
         }
-        Page<Post> posts = postRepository.findByCategory(category, pageable);
+        Pageable sortedPageable = applySorting(pageable, sortOption);
+        Page<Post> posts = postRepository.findByCategory(category, sortedPageable);
 
         if (posts.isEmpty()) {
             throw new BusinessException(NOT_FOUND_POST);
         }
         return posts;
     }
-
     // 글 조회수 증가
     @Override
     @Transactional
@@ -202,4 +202,5 @@ public class PostServiceImpl implements PostService {
         postSearchHistoryService.saveSearchTerm(userId, title);
         return postRepository.findByTitleContaining(title, pageable);
     }
+
 }

@@ -135,9 +135,13 @@ public class PostController {
     // 카테고리별 게시글 조회 API
     @GetMapping("/category")
     public ResponseEntity<PostListResponseDto> getPostsByCategory(
-            @RequestParam("category") Category category, Pageable pageable, @AuthUserId String userId, CommentService commentService) {
+            @RequestParam("category") Category category,
+            Pageable pageable,
+            @RequestParam(defaultValue = "NEWEST_FIRST") SortOption sortOption,
+            @AuthUserId String userId,
+            CommentService commentService) {
 
-        Page<Post> postPage = postService.listByCategory(category, pageable);
+        Page<Post> postPage = postService.listByCategory(category, pageable, sortOption);
         List<String> blockedUserIdList = userService.getBlockedUserIdList(userId);
 
         List<PostListResponseDto.PostResponseDto> postResponseDtoList = postPage.getContent().stream()
@@ -149,12 +153,13 @@ public class PostController {
                         postLikeFilterService.isUserLikedPost(userId, post.getId()),
                         post.getUser().getId().equals(userId),
                         userId,
-                        commentService ))
+                        commentService))
                 .filter(postResponseDto -> postResponseDto.getIsBlocked() == null || !postResponseDto.getIsBlocked())
                 .toList();
 
         return ResponseEntity.ok(new PostListResponseDto(postResponseDtoList, PagingResponse.from(postPage)));
     }
+
 
     // 내가 작성한 게시글 조회 api
     @GetMapping("/my-posts")
