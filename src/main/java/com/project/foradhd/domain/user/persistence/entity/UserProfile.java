@@ -3,6 +3,7 @@ package com.project.foradhd.domain.user.persistence.entity;
 import com.project.foradhd.domain.user.persistence.enums.ForAdhdType;
 import com.project.foradhd.global.audit.BaseTimeEntity;
 import jakarta.persistence.*;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,7 +44,7 @@ public class UserProfile extends BaseTimeEntity {
     }
 
     public void withdraw() {
-        this.nickname = "";
+        this.nickname = "withdrawn_" + UUID.randomUUID();
         this.profileImage = "";
     }
 }
