@@ -58,7 +58,9 @@ public class Comment extends BaseTimeEntity {
 
     private String profileImage;
 
+    @Builder.Default
     @Column(nullable = false)
+    @ColumnDefault("false")
     private boolean deleted = false;
 
     @Column
