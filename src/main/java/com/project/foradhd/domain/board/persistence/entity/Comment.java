@@ -57,4 +57,10 @@ public class Comment extends BaseTimeEntity {
     private String nickname;
 
     private String profileImage;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    @Column
+    private String deletedMessage;
 }

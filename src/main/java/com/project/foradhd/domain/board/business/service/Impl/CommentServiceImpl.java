@@ -92,16 +92,20 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_COMMENT));
 
-        // 대댓글의 부모 참조를 한 번의 배치 업데이트로 null 처리
-        commentRepository.detachChildComments(commentId);
-
-        // 원댓글 삭제
-        commentRepository.deleteCommentById(commentId);
+        int childCount = commentRepository.countByParentCommentId(commentId);
+        if (childCount > 0) {
+            // 대댓글이 존재하면 soft delete 처리
+            commentRepository.softDeleteById(commentId);
+        } else {
+            // 대댓글이 없으면 진짜 삭제해도 OK (soft delete로 유지하고 싶다면 이 줄도 softDeleteById로 대체 가능)
+            commentRepository.softDeleteById(commentId);
+        }
     }
 
+    @Override
     @Transactional
     public void deleteChildrenComment(Long commentId) {
-        commentRepository.deleteByParentId(commentId);
+        commentRepository.softDeleteCommentById(commentId);
     }
 
     @Override

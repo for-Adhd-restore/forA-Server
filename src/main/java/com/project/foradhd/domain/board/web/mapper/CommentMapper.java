@@ -70,8 +70,11 @@ public interface CommentMapper {
     }
 
 
-    // ✅ 닉네임 가져오는 함수
+    // ✅ 닉네임 가져오는 함수 (삭제된 댓글 대응)
     default String getNickname(Comment comment, UserService userService) {
+        if (Boolean.TRUE.equals(comment.isDeleted())) {
+            return "(삭제)";
+        }
         if (comment.getAnonymous()) {
             return "익명";
         }
@@ -84,8 +87,11 @@ public interface CommentMapper {
         return "알 수 없음";
     }
 
-    // ✅ 프로필 이미지 가져오는 함수
+    // ✅ 프로필 이미지 가져오는 함수 (삭제된 댓글 대응)
     default String getProfileImage(Comment comment, UserService userService) {
+        if (Boolean.TRUE.equals(comment.isDeleted())) {
+            return "image/default-profile.png";
+        }
         if (comment.getAnonymous()) {
             return "image/default-profile.png";
         }
