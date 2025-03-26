@@ -37,5 +37,6 @@ public class CommentListResponseDto {
         private Boolean isBlocked;
         private final Boolean isLiked;
         private final Boolean isCommentAuthor;
+        private boolean isDeleted;
     }
 }
