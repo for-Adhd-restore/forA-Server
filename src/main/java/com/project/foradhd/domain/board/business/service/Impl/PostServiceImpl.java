@@ -118,10 +118,6 @@ public class PostServiceImpl implements PostService {
         }
         Pageable sortedPageable = applySorting(pageable, sortOption);
         Page<Post> posts = postRepository.findByCategory(category, sortedPageable);
-
-        if (posts.isEmpty()) {
-            throw new BusinessException(NOT_FOUND_POST);
-        }
         return posts;
     }
     // 글 조회수 증가
