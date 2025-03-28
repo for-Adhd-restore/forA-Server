@@ -2,7 +2,9 @@ package com.project.foradhd.domain.board.web.controller;
 
 import com.project.foradhd.domain.board.business.service.NotificationService;
 import com.project.foradhd.domain.board.business.service.PostService;
+import com.project.foradhd.domain.board.persistence.entity.Notification;
 import com.project.foradhd.domain.board.persistence.enums.Category;
+import com.project.foradhd.domain.board.persistence.repository.NotificationRepository;
 import com.project.foradhd.global.AuthUserId;
 import com.project.foradhd.global.util.SseEmitters;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/notifications")
@@ -19,6 +23,7 @@ public class NotificationController {
     private final NotificationService notificationService;
     private final SseEmitters sseEmitters;
     private final PostService postService;
+    private final NotificationRepository notificationRepository;
 
     @GetMapping("/sse")
     public SseEmitter streamSseMvc(@AuthUserId String userId) {
@@ -74,5 +79,10 @@ public class NotificationController {
                                             @RequestParam String userId) {
         postService.addComment(postId, content, userId);
         return ResponseEntity.ok("댓글 알림 테스트 완료");
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Notification>> getAllNotifications(@AuthUserId String userId) {
+        return ResponseEntity.ok(notificationRepository.findByUserId(userId));
     }
 }
