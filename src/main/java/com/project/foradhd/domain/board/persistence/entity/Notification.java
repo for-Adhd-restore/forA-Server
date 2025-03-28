@@ -26,8 +26,6 @@ public class Notification extends BaseTimeEntity {
 
     private boolean isRead;
 
-    private LocalDateTime createdAt;
-
     public void setRead(boolean isRead) {
         this.isRead = isRead;
     }

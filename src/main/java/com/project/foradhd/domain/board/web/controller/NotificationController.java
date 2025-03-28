@@ -45,4 +45,12 @@ public class NotificationController {
         notificationService.markAsRead(id);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/test")
+    public ResponseEntity<Void> sendTestNotification(@AuthUserId String userId) {
+        String message = "🔔 테스트 알림입니다!";
+        notificationService.createNotification(userId, message);
+        sseEmitters.sendNotification(userId, message);
+        return ResponseEntity.ok().build();
+    }
 }
