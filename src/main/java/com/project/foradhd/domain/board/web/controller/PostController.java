@@ -369,7 +369,6 @@ public class PostController {
     @PostMapping("/handleReport")
     public ResponseEntity<Void> handleReport(@RequestBody HandleReportRequest handleReportRequest){
         postReportService.handleReport(
-                handleReportRequest.getEmail(),
                 handleReportRequest.getPostId(),
                 handleReportRequest.getHandleReportType()
         );

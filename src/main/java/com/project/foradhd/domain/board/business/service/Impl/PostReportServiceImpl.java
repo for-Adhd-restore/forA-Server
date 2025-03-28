@@ -55,11 +55,11 @@ public class PostReportServiceImpl implements PostReportService {
 
     @Override
     @Transactional
-    public void handleReport(String email, Long postId, HandleReport handleReportType){
+    public void handleReport(Long postId, HandleReport handleReportType){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
 
-        User user = userService.getUserByEmail(email);
+        User user = post.getUser();
 
         user.updateUserStatus(handleReportType);
 

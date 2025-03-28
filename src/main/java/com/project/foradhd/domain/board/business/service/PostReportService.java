@@ -9,7 +9,7 @@ import java.util.List;
 public interface PostReportService {
     void postReport(Long postId, Report reportType);
 
-    void handleReport(String email, Long postId, HandleReport handleReportType);
+    void handleReport(Long postId, HandleReport handleReportType);
 
     List<Post> findReportedPostList();
 

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @NoArgsConstructor
 public class HandleReportRequest {
 
-    private String email;
     private Long postId;
     private HandleReport handleReportType;
 
