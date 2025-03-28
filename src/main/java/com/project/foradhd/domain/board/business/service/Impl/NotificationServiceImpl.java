@@ -30,7 +30,6 @@ public class NotificationServiceImpl implements NotificationService {
                 .user(user)
                 .message(message)
                 .isRead(false)
-                .createdAt(LocalDateTime.now())
                 .build();
         notificationRepository.save(notification);
         sseEmitters.sendNotification(userId, message);
