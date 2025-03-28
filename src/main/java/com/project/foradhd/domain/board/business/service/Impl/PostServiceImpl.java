@@ -147,6 +147,7 @@ public class PostServiceImpl implements PostService {
         return topPosts;
     }
 
+    @Transactional
     private void notifyUsersAboutTopPosts(List<Post> topPosts) {
         for (Post post : topPosts) {
             String message = "내 글이 TOP 10 게시물로 선정됐어요!";
@@ -156,6 +157,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void addComment(Long postId, String commentContent, String userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
