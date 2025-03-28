@@ -14,11 +14,13 @@ public interface NotificationMapper {
     NotificationMapper INSTANCE = Mappers.getMapper(NotificationMapper.class);
 
     @Mappings({
-            @Mapping(source = "user.userProfile.nickname", target = "userProfile.nickname"),
-            @Mapping(source = "user.userProfile.profileImage", target = "userProfile.profileImageUrl"),
+//            @Mapping(source = "user.userProfile.nickname", target = "userProfile.nickname"),
+//            @Mapping(source = "user.userProfile.profileImage", target = "userProfile.profileImageUrl"),
             @Mapping(source = "createdAt", target = "createdAt"),
             @Mapping(source = "read", target = "isRead"),
-            @Mapping(target = "userProfile", expression = "java(toUserProfile(notification.getUser().getUserProfile()))")
+            @Mapping(target = "userProfile", expression = "java(toUserProfile(notification.getUser().getUserProfile()))"),
+            @Mapping(target = "notificationType", constant = "NOTIFICATION"),
+            @Mapping(target = "content", source = "message")
     })
     NotificationResponse toDto(Notification notification);
 
