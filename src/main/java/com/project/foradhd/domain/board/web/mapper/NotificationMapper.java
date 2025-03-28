@@ -2,6 +2,7 @@ package com.project.foradhd.domain.board.web.mapper;
 
 import com.project.foradhd.domain.board.persistence.entity.Notification;
 import com.project.foradhd.domain.board.web.dto.response.NotificationResponse;
+import com.project.foradhd.domain.user.persistence.entity.UserProfile;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -14,9 +15,17 @@ public interface NotificationMapper {
 
     @Mappings({
             @Mapping(source = "user.userProfile.nickname", target = "userProfile.nickname"),
-            @Mapping(source = "user.userProfile.profileImageUrl", target = "userProfile.profileImageUrl"),
-            @Mapping(source = "notificationType", target = "notificationType", qualifiedByName = "toStringValue"),
-            @Mapping(source = "createdAt", target = "createdAt", dateFormat = "yyyy-MM-dd HH:mm:ss")
+            @Mapping(source = "user.userProfile.profileImage", target = "userProfile.profileImageUrl"),
+            @Mapping(source = "createdAt", target = "createdAt"),
+            @Mapping(source = "read", target = "isRead"),
+            @Mapping(target = "userProfile", expression = "java(toUserProfile(notification.getUser().getUserProfile()))")
     })
     NotificationResponse toDto(Notification notification);
+
+    default NotificationResponse.UserProfileInfo toUserProfile(UserProfile profile) {
+        return NotificationResponse.UserProfileInfo.builder()
+                .nickname(profile.getNickname())
+                .profileImageUrl(profile.getProfileImage())
+                .build();
+    }
 }

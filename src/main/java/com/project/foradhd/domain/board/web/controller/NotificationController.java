@@ -5,6 +5,8 @@ import com.project.foradhd.domain.board.business.service.PostService;
 import com.project.foradhd.domain.board.persistence.entity.Notification;
 import com.project.foradhd.domain.board.persistence.enums.Category;
 import com.project.foradhd.domain.board.persistence.repository.NotificationRepository;
+import com.project.foradhd.domain.board.web.dto.response.NotificationResponse;
+import com.project.foradhd.domain.board.web.mapper.NotificationMapper;
 import com.project.foradhd.global.AuthUserId;
 import com.project.foradhd.global.util.SseEmitters;
 import lombok.RequiredArgsConstructor;
@@ -82,7 +84,11 @@ public class NotificationController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Notification>> getAllNotifications(@AuthUserId String userId) {
-        return ResponseEntity.ok(notificationRepository.findByUserId(userId));
+    public ResponseEntity<List<NotificationResponse>> getAllNotifications(@AuthUserId String userId) {
+        List<Notification> notifications = notificationRepository.findByUserId(userId);
+        List<NotificationResponse> result = notifications.stream()
+                .map(NotificationMapper.INSTANCE::toDto)
+                .toList();
+        return ResponseEntity.ok(result);
     }
 }
