@@ -16,7 +16,7 @@ import java.util.Locale;
 public class PasswordValidator implements ConstraintValidator<ValidPassword, PasswordRequest> {
 
     //숫자, 영문, 특수문자 조합 8자리 이상(공백 문자 포함X)
-    private static final String DEFAULT_PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
+    private static final String DEFAULT_PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9])(?=\\S+$).{8,}$";
     private static final String PASSWORD_REGEX_VALIDATION_MESSAGE_CODE = "password.invalid.format";
     private static final String PASSWORD_CONFIRM_VALIDATION_MESSAGE_CODE = "password.notMatches.passwordConfirm";
     private final MessageSource validationMessageSource;
