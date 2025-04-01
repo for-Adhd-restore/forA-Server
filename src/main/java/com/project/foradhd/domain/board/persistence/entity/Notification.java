@@ -1,12 +1,9 @@
 package com.project.foradhd.domain.board.persistence.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.project.foradhd.domain.user.persistence.entity.User;
 import com.project.foradhd.global.audit.BaseTimeEntity;
-import com.project.foradhd.global.serializer.LocalDateTimeToEpochSecondSerializer;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -28,8 +25,6 @@ public class Notification extends BaseTimeEntity {
     private String message;
 
     private boolean isRead;
-
-    private LocalDateTime createdAt;
 
     public void setRead(boolean isRead) {
         this.isRead = isRead;
