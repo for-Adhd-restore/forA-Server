@@ -14,32 +14,32 @@ import java.util.Optional;
 @Repository
 public interface MedicineReviewRepository extends JpaRepository<MedicineReview, Long> {
 
-    // 리뷰 ID로 유저 프로필 및 개인정보와 함께 조회
-    @Query("""
-        SELECT r FROM MedicineReview r
-        JOIN FETCH r.user u
-        JOIN UserProfile up ON up.user.id = u.id
-        JOIN UserPrivacy uv ON uv.user.id = u.id
-        WHERE r.id = :reviewId
-        """)
-    Optional<MedicineReview> findByIdWithUserDetails(@Param("reviewId") Long reviewId);
+//    // 리뷰 ID로 유저 프로필 및 개인정보와 함께 조회
+//    @Query("""
+//        SELECT r FROM MedicineReview r
+//        JOIN FETCH r.user u
+//        JOIN UserProfile up ON up.user.id = u.id
+//        JOIN UserPrivacy uv ON uv.user.id = u.id
+//        WHERE r.id = :reviewId
+//        """)
+//    Optional<MedicineReview> findByIdWithUserDetails(@Param("reviewId") Long reviewId);
 
-    // 특정 유저의 모든 리뷰를 유저 프로필 및 개인정보와 함께 조회
-    @Query("""
-        SELECT r FROM MedicineReview r
-        JOIN FETCH r.user u
-        JOIN UserProfile up ON up.user.id = u.id
-        JOIN UserPrivacy uv ON uv.user.id = u.id
-        WHERE u.id = :userId
-        """)
-    Page<MedicineReview> findByUserIdWithDetails(@Param("userId") String userId, Pageable pageable);
+//    // 특정 유저의 모든 리뷰를 유저 프로필 및 개인정보와 함께 조회
+//    @Query("""
+//        SELECT r FROM MedicineReview r
+//        JOIN FETCH r.user u
+//        JOIN UserProfile up ON up.user.id = u.id
+//        JOIN UserPrivacy uv ON uv.user.id = u.id
+//        WHERE u.id = :userId
+//        """)
+//    Page<MedicineReview> findByUserIdWithDetails(@Param("userId") String userId, Pageable pageable);
 
-    // 특정 약물의 모든 리뷰를 유저 프로필 및 개인정보와 함께 조회
-    @Query("SELECT r FROM MedicineReview r WHERE r.medicine.id = :medicineId")
-    @EntityGraph(attributePaths = {
-            "user", "medicine", "coMedications.medicine"
-    })
-    Page<MedicineReview> findByMedicineIdWithDetails(@Param("medicineId") Long medicineId, Pageable pageable);
+//    // 특정 약물의 모든 리뷰를 유저 프로필 및 개인정보와 함께 조회
+//    @Query("SELECT r FROM MedicineReview r WHERE r.medicine.id = :medicineId")
+//    @EntityGraph(attributePaths = {
+//            "user", "medicine", "coMedications.medicine"
+//    })
+//    Page<MedicineReview> findByMedicineIdWithDetails(@Param("medicineId") Long medicineId, Pageable pageable);
 
     // 모든 리뷰를 유저 프로필 및 개인정보와 함께 조회
     @Query("""
@@ -49,4 +49,28 @@ public interface MedicineReviewRepository extends JpaRepository<MedicineReview, 
         JOIN UserPrivacy uv ON uv.user.id = u.id
         """)
     Page<MedicineReview> findAllWithUserDetails(Pageable pageable);
+
+    @EntityGraph(attributePaths = {
+            "user", "user.userProfile", "user.userPrivacy", "medicine", "coMedications.medicine"
+    })
+    @Query("SELECT r FROM MedicineReview r WHERE r.id = :reviewId")
+    Optional<MedicineReview> findByIdWithUserDetails(@Param("reviewId") Long reviewId);
+
+    @EntityGraph(attributePaths = {
+            "user", "user.userProfile", "user.userPrivacy", "medicine", "coMedications.medicine"
+    })
+    @Query("SELECT r FROM MedicineReview r WHERE r.user.id = :userId")
+    Page<MedicineReview> findByUserIdWithDetails(@Param("userId") String userId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {
+            "user", "user.userProfile", "user.userPrivacy", "medicine", "coMedications.medicine"
+    })
+    @Query("SELECT r FROM MedicineReview r WHERE r.medicine.id = :medicineId")
+    Page<MedicineReview> findByMedicineIdWithDetails(@Param("medicineId") Long medicineId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {
+            "user", "user.userProfile", "user.userPrivacy", "medicine", "coMedications.medicine"
+    })
+    @Query("SELECT r FROM MedicineReview r")
+    Page<MedicineReview> findAllWithDetails(Pageable pageable);
 }
