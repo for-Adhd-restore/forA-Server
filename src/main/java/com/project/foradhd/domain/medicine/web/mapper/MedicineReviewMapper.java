@@ -23,17 +23,17 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {MedicineMapper.class, UserMapper.class})
 public interface MedicineReviewMapper {
 
-    @Mapping(target = "medicine", ignore = true) // medicine은 수동으로 설정
-    @Mapping(target = "user", ignore = true) // user도 수동 설정
-    @Mapping(target = "coMedications", ignore = true) // coMedications도 수동 설정
+    @Mapping(target = "medicine", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "coMedications", ignore = true)
     @Mapping(target = "ageRange", ignore = true)
     @Mapping(target = "gender", ignore = true)
     MedicineReview toEntity(MedicineReviewRequest request);
 
-    @Mapping(target = "medicineId", source = "medicine.id") // Medicine 객체의 ID 매핑
-    @Mapping(target = "userId", source = "user.id") // User 객체의 ID 매핑
+    @Mapping(target = "medicineId", source = "medicine.id")
+    @Mapping(target = "userId", source = "user.id")
     @Mapping(target = "coMedications", expression = "java(mapCoMedications(review.getCoMedications()))") // 리스트 매핑
-    MedicineReviewResponse toResponseDto(MedicineReview review, @Context UserService userService);
+    MedicineReviewResponse toResponseDto(MedicineReview review, @Context UserService userService, @Context String currentUserId);
 
     // ✅ coMedications 매핑 메서드 추가 (List<MedicineCoMedication> → List<Long>)
     default List<MedicineReviewResponse.CoMedicationResponse> mapCoMedications(List<MedicineCoMedication> coMedications) {
@@ -73,7 +73,8 @@ public interface MedicineReviewMapper {
     @AfterMapping
     default void setUserProfileDetails(@MappingTarget MedicineReviewResponse.MedicineReviewResponseBuilder responseBuilder,
                                        MedicineReview review,
-                                       @Context UserService userService) {
+                                       @Context UserService userService,
+                                       @Context String currentUserId) {
         // ✅ 유저 ID를 사용해 프로필 정보 가져오기
         UserProfile userProfile = userService.getUserProfile(review.getUser().getId());
         UserPrivacy userPrivacy = userService.getUserPrivacy(review.getUser().getId());
@@ -86,6 +87,7 @@ public interface MedicineReviewMapper {
             responseBuilder.ageRange(userPrivacy.getAgeRange());
             responseBuilder.gender(userPrivacy.getGender());
         }
+        responseBuilder.isAuthor(review.getUser().getId().equals(currentUserId));
     }
 
     @AfterMapping
