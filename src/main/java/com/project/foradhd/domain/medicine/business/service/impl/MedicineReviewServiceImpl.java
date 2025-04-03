@@ -150,6 +150,8 @@ public class MedicineReviewServiceImpl implements MedicineReviewService {
             throw new BusinessException(ErrorCode.FORBIDDEN_MEDICINE_REVIEW);
         }
 
+        medicineReviewLikeRepository.deleteByMedicineReviewId(reviewId);
+        medicineReview.getCoMedications().clear();
         // 리뷰 삭제
         medicineReviewRepository.deleteById(reviewId);
 

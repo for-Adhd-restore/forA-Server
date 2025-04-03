@@ -1,5 +1,6 @@
 package com.project.foradhd.domain.medicine.web.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.project.foradhd.domain.user.persistence.enums.Gender;
 import com.project.foradhd.global.paging.web.dto.response.PagingResponse;
@@ -29,6 +30,8 @@ public class MedicineReviewResponse {
     private Gender gender;
     private double averageGrade;
     private String medicineName;
+    @JsonProperty("isAuthor")
+    private boolean isAuthor;
     @JsonSerialize(using = LocalDateTimeToEpochSecondSerializer.class)
     private LocalDateTime createdAt;
     @JsonSerialize(using = LocalDateTimeToEpochSecondSerializer.class)

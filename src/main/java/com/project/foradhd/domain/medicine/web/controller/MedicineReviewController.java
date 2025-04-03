@@ -33,14 +33,14 @@ public class MedicineReviewController {
     public ResponseEntity<MedicineReviewResponse> createReview(@RequestBody MedicineReviewRequest request, @AuthUserId String userId) {
         MedicineReview review = medicineReviewService.createReview(request, userId);
         // 리뷰를 조회할 때마다 실시간으로 유저 정보를 매핑
-        MedicineReviewResponse response = medicineReviewMapper.toResponseDto(review, userService);
+        MedicineReviewResponse response = medicineReviewMapper.toResponseDto(review, userService, userId);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<MedicineReviewResponse> updateReview(@PathVariable Long id, @RequestBody MedicineReviewRequest request, @AuthUserId String userId) {
         MedicineReview review = medicineReviewService.updateReview(id, request, userId);
-        MedicineReviewResponse response = medicineReviewMapper.toResponseDto(review, userService);
+        MedicineReviewResponse response = medicineReviewMapper.toResponseDto(review, userService, userId);
         return ResponseEntity.ok(response);
     }
 
@@ -54,10 +54,11 @@ public class MedicineReviewController {
 
     @GetMapping
     public ResponseEntity<MedicineReviewResponse.PagedMedicineReviewResponse> getReviews(
-            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthUserId String userId) {
         Page<MedicineReview> reviews = medicineReviewService.findReviews(pageable);
         List<MedicineReviewResponse> reviewDtoList = reviews.stream()
-                .map(review -> medicineReviewMapper.toResponseDto(review, userService))
+                .map(review -> medicineReviewMapper.toResponseDto(review, userService, userId))
                 .toList();
 
         PagingResponse pagingResponse = PagingResponse.from(reviews);
@@ -80,7 +81,7 @@ public class MedicineReviewController {
 
         // 엔티티를 DTO로 변환
         List<MedicineReviewResponse> reviewDtos = reviews.stream()
-                .map(review -> medicineReviewMapper.toResponseDto(review, userService))
+                .map(review -> medicineReviewMapper.toResponseDto(review, userService, userId))
                 .collect(Collectors.toList());
 
         PagingResponse pagingResponse = PagingResponse.from(reviews);
@@ -97,10 +98,10 @@ public class MedicineReviewController {
     public ResponseEntity<MedicineReviewResponse.PagedMedicineReviewResponse> getReviewsByMedicineId(
             @PathVariable Long medicineId,
             @RequestParam(defaultValue = "NEWEST_FIRST") SortOption sortOption,
-            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable, @AuthUserId String userId) {
         Page<MedicineReview> reviews = medicineReviewService.findReviewsByMedicineId(medicineId, pageable, sortOption);
         List<MedicineReviewResponse> reviewDtos = reviews.stream()
-                .map(review -> medicineReviewMapper.toResponseDto(review, userService))
+                .map(review -> medicineReviewMapper.toResponseDto(review, userService, userId))
                 .collect(Collectors.toList());
 
         PagingResponse pagingResponse = PagingResponse.from(reviews);

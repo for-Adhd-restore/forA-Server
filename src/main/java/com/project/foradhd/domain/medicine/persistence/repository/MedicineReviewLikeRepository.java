@@ -7,4 +7,5 @@ public interface MedicineReviewLikeRepository extends JpaRepository<MedicineRevi
 
     boolean existsByUserIdAndMedicineReviewId(String userId, Long reviewId);
     void deleteByUserIdAndMedicineReviewId(String userId, Long reviewId);
+    void deleteByMedicineReviewId(Long reviewId);
 }
