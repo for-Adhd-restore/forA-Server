@@ -14,7 +14,6 @@ public interface ReportPostRepository extends JpaRepository<ReportPost, Long> {
 
     Optional<ReportPost> findByPostAndReportType(Post post, Report reportType);
 
-//       최적화 했을 때... 이전에는 쿼리 9개 최적화 하면 8개..
     @Query("""
     select distinct p
     from Post p
