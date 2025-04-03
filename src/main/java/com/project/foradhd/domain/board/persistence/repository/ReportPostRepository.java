@@ -14,10 +14,15 @@ public interface ReportPostRepository extends JpaRepository<ReportPost, Long> {
 
     Optional<ReportPost> findByPostAndReportType(Post post, Report reportType);
 
+//       최적화 했을 때... 이전에는 쿼리 9개 최적화 하면 8개..
     @Query("""
-        select distinct p.post
-        from ReportPost p
-        """)
+    select distinct p
+    from Post p
+    join fetch p.user
+    where p.id in (
+        select rp.post.id from ReportPost rp
+    )
+""")
     List<Post> findAllDistinctReportedPost();
 
     List<ReportPost> findByPost(Post post);
