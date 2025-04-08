@@ -23,6 +23,20 @@ spring:
       circuitbreaker:
         enabled: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    tags:
+      application: foradhd-server
+
 jwt:
   expiry:
     access-token: 3600000 #60 * 60 * 1000 (1 hour)
