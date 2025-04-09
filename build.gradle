@@ -119,6 +119,9 @@ tasks.register('integrationTest', Test) {
 jar {
 	enabled = false
 }
+bootJar {
+	enabled = true
+}
 
 sonarqube {
 	properties {
