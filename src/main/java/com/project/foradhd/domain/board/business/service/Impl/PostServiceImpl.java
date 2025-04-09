@@ -155,7 +155,7 @@ public class PostServiceImpl implements PostService {
                 continue;
             }
             String message = "내 글이 TOP 10 게시물로 선정됐어요!";
-            notificationService.createNotification(post.getUser().getId(), message);
+            notificationService.createNotification(post.getUser().getId(), message, post);
             sseEmitters.sendNotification(post.getUser().getId(), message);
             Post updatedPost = post.toBuilder()
                     .notifiedAsTop(true)
@@ -171,7 +171,7 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
 
         String message = "새로운 댓글이 달렸어요: " + commentContent;
-        notificationService.createNotification(post.getUser().getId(), message);
+        notificationService.createNotification(post.getUser().getId(), message, post);
         sseEmitters.sendNotification(post.getUser().getId(), message);
     }
 

@@ -11,6 +11,7 @@ public class NotificationResponse {
     private boolean isRead;
     private String notificationType;
     private String createdAt;
+    private Long postId;
 
     private UserProfileInfo userProfile;
 

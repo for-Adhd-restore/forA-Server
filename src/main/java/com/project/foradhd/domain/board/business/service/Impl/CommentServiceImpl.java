@@ -91,7 +91,7 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_POST));
         if (!post.getUser().getId().equals(userId)) {
             String message = "내 게시글에 새로운 댓글이 달렸어요: " + savedComment.getContent();
-            notificationService.createNotification(post.getUser().getId(), message);
+            notificationService.createNotification(post.getUser().getId(), message, post);
         }
 
         return savedComment;
