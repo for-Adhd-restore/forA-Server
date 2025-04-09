@@ -3,6 +3,7 @@ package com.project.foradhd.domain.board.web.controller;
 import com.project.foradhd.domain.board.business.service.NotificationService;
 import com.project.foradhd.domain.board.business.service.PostService;
 import com.project.foradhd.domain.board.persistence.entity.Notification;
+import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.persistence.enums.Category;
 import com.project.foradhd.domain.board.persistence.repository.NotificationRepository;
 import com.project.foradhd.domain.board.web.dto.response.NotificationResponse;
@@ -11,6 +12,7 @@ import com.project.foradhd.global.AuthUserId;
 import com.project.foradhd.global.util.SseEmitters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -27,7 +29,7 @@ public class NotificationController {
     private final PostService postService;
     private final NotificationRepository notificationRepository;
 
-    @GetMapping("/sse")
+    @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamSseMvc(@AuthUserId String userId) {
         // 타임아웃을 1시간(3600000ms)으로 설정
         SseEmitter emitter = new SseEmitter(3600000L);
@@ -60,7 +62,9 @@ public class NotificationController {
     @PostMapping("/test")
     public ResponseEntity<Void> sendTestNotification(@AuthUserId String userId) {
         String message = "🔔 테스트 알림입니다!";
-        notificationService.createNotification(userId, message);
+        Long postId = 69L;
+        Post post = postService.getPost(postId);
+        notificationService.createNotification(userId, message, post);
         sseEmitters.sendNotification(userId, message);
         return ResponseEntity.ok().build();
     }

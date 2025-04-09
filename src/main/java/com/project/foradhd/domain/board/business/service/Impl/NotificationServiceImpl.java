@@ -2,6 +2,7 @@ package com.project.foradhd.domain.board.business.service.Impl;
 
 import com.project.foradhd.domain.board.business.service.NotificationService;
 import com.project.foradhd.domain.board.persistence.entity.Notification;
+import com.project.foradhd.domain.board.persistence.entity.Post;
 import com.project.foradhd.domain.board.persistence.repository.NotificationRepository;
 import com.project.foradhd.domain.user.business.service.UserService;
 import com.project.foradhd.domain.user.persistence.entity.User;
@@ -24,12 +25,13 @@ public class NotificationServiceImpl implements NotificationService {
     private final SseEmitters sseEmitters;
 
     @Override
-    public void createNotification(String userId, String message) {
+    public void createNotification(String userId, String message, Post post) {
         User user = userService.getUser(userId);
         Notification notification = Notification.builder()
                 .user(user)
                 .message(message)
                 .isRead(false)
+                .post(post)
                 .build();
         notificationRepository.save(notification);
         sseEmitters.sendNotification(userId, message);

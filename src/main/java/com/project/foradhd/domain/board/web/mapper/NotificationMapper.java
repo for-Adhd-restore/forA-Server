@@ -20,7 +20,8 @@ public interface NotificationMapper {
             @Mapping(source = "read", target = "isRead"),
             @Mapping(target = "userProfile", expression = "java(toUserProfile(notification.getUser().getUserProfile()))"),
             @Mapping(target = "notificationType", constant = "NOTIFICATION"),
-            @Mapping(target = "content", source = "message")
+            @Mapping(target = "content", source = "message"),
+            @Mapping(target = "postId", expression = "java(notification.getPost() != null ? notification.getPost().getId() : null)")
     })
     NotificationResponse toDto(Notification notification);
 

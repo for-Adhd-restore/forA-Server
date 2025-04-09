@@ -5,6 +5,7 @@ import com.project.foradhd.domain.board.persistence.enums.Category;
 import com.project.foradhd.domain.board.persistence.enums.SortOption;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -38,6 +39,10 @@ public interface PostService {
 
     // 메인홈 - 카테고리별 실시간 랭킹
     Page<Post> getTopPostsByCategory(Category category, Pageable pageable);
+
+    @Transactional
+    void notifyUsersAboutTopPosts(List<Post> topPosts);
+
     // SSE 알림 관련 설정
     void addComment(Long postId, String commentContent, String userId);
     List<String> getRecentSearchTerms(String userId);
