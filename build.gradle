@@ -104,6 +104,7 @@ dependencies {
 	// Prometheus 설정
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
+	implementation 'io.netty:netty-all:4.1.108.Final'
 }
 
 tasks.named('test') {
