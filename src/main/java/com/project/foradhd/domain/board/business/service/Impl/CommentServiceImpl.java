@@ -1,6 +1,7 @@
 package com.project.foradhd.domain.board.business.service.Impl;
 
 import com.project.foradhd.domain.board.business.service.CommentService;
+import com.project.foradhd.domain.board.business.service.NotificationService;
 import com.project.foradhd.domain.board.persistence.entity.Comment;
 import com.project.foradhd.domain.board.persistence.entity.CommentLikeFilter;
 import com.project.foradhd.domain.board.persistence.entity.Post;
@@ -31,6 +32,7 @@ import static org.springframework.data.jpa.repository.query.QueryUtils.applySort
 public class CommentServiceImpl implements CommentService {
 
     private final UserService userService;
+    private final NotificationService notificationService;
     private final CommentRepository commentRepository;
     private final CommentLikeFilterRepository commentLikeFilterRepository;
     private final PostRepository postRepository;
@@ -82,7 +84,17 @@ public class CommentServiceImpl implements CommentService {
                     .profileImage(userProfile.getProfileImage());
         }
 
-        return commentRepository.save(commentBuilder.build());
+        Comment savedComment = commentRepository.save(commentBuilder.build());
+
+        // 🔔 알림 전송 (댓글 작성자와 게시글 작성자가 다를 경우에만)
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_POST));
+        if (!post.getUser().getId().equals(userId)) {
+            String message = "내 게시글에 새로운 댓글이 달렸어요: " + savedComment.getContent();
+            notificationService.createNotification(post.getUser().getId(), message);
+        }
+
+        return savedComment;
     }
 
 
