@@ -147,12 +147,20 @@ public class PostServiceImpl implements PostService {
         return topPosts;
     }
 
+    @Override
     @Transactional
-    private void notifyUsersAboutTopPosts(List<Post> topPosts) {
+    public void notifyUsersAboutTopPosts(List<Post> topPosts) {
         for (Post post : topPosts) {
+            if (Boolean.TRUE.equals(post.getNotifiedAsTop())) {
+                continue;
+            }
             String message = "내 글이 TOP 10 게시물로 선정됐어요!";
             notificationService.createNotification(post.getUser().getId(), message);
             sseEmitters.sendNotification(post.getUser().getId(), message);
+            Post updatedPost = post.toBuilder()
+                    .notifiedAsTop(true)
+                    .build();
+            postRepository.save(updatedPost);
         }
     }
 
