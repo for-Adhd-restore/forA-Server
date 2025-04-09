@@ -74,6 +74,9 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private Integer viewCount = 0;
 
+    @Column(nullable = false)
+    private boolean notifiedAsTop = false;
+
     public void incrementLikeCount() {
         this.likeCount++;
     }
