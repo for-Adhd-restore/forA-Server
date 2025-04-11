@@ -60,6 +60,8 @@ public class SecurityConfig {
     private static final String WITHDRAW_API_PATH = "/api/v1/user/withdraw";
     private static final String LOGOUT_API_PATH = "/api/v1/auth/logout";
 
+    private static final String PROMETHEUS_PATH = "/actuator/prometheus";
+
     private static final RequestMatcher loginMatcher = new AntPathRequestMatcher(LOGIN_API_PATH, POST.name());
     private static final RequestMatcher logoutMatcher = new AntPathRequestMatcher(LOGOUT_API_PATH, DELETE.name());
 
@@ -83,7 +85,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(registry -> registry
                 .requestMatchers(NICKNAME_CHECK_API_PATH, EMAIL_CHECK_API_PATH, EMAIL_AUTH_API_PATH,
                         SIGN_UP_API_PATH, LOGIN_API_PATH, AUTH_TOKEN_REISSUE_API_PATH, S3_IMAGE_API_PATH,
-                        HEALTH_CHECK_API_PATH).permitAll()
+                        HEALTH_CHECK_API_PATH, PROMETHEUS_PATH).permitAll()
                 .requestMatchers("/error", "/favicon.ico").permitAll()
                     .requestMatchers("/api/v1/notifications/sse").permitAll()
                 .requestMatchers(SNS_SIGN_UP_API_PATH, WITHDRAW_API_PATH, LOGOUT_API_PATH).hasRole(Role.GUEST.name())
