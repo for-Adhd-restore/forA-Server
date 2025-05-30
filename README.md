@@ -1,7 +1,6 @@
 <h1>ForA</h1>
 <h2>📝 기획 의도 (Purpose)</h2>
-
-<img width="931" alt="스크린샷 2024-10-17 오후 1 41 20" src="https://github.com/user-attachments/assets/15621be7-eba0-43f3-a053-ace957bc9b07"><br/>
+<img width="300" alt="스크린샷 2024-10-17 오후 1 41 20" src="https://github.com/user-attachments/assets/59d2cbf6-828b-40d7-aade-4b4627f05997"><br/>
 ADHD로 혼자 고민하지 말고, 'ForA'와 함께하세요!<br />
 여러분의 일상과 고민을 나누고,<br />
 ADHD를 잘 이해하고 치료하는 병원을 찾아보고,<br />
@@ -38,8 +37,8 @@ ADHD를 잘 이해하고 치료하는 병원을 찾아보고,<br />
 <h3>🚀 구현 기능 (Implemented Features)</h3>
 
 <h4>1️⃣ 기능 1: 회원가입 및 로그인</h4>
-<img width="951" alt="스크린샷 2024-10-22 오후 3 39 08" src="https://github.com/user-attachments/assets/9ecc406c-4cdb-45cb-a617-12488cd50c3b">
-<img width="856" alt="스크린샷 2024-10-22 오후 3 39 42" src="https://github.com/user-attachments/assets/72247426-5d3a-4cd8-8daa-89b201ae649a">
+<img width="300" src="https://github.com/user-attachments/assets/8a4270db-2a08-46da-87e4-24df3ffa556b">
+<img width="301" src="https://github.com/user-attachments/assets/ff1874e3-8f6a-48ab-af6f-6baa332f9027">
 
 
 <h4>2️⃣기능 2: 메인홈</h4>
