@@ -37,37 +37,36 @@ ADHD를 잘 이해하고 치료하는 병원을 찾아보고,<br />
 <h3>🚀 구현 기능 (Implemented Features)</h3>
 
 <h4>1️⃣ 기능 1: 회원가입 및 로그인</h4>
-<img width="300" src="https://github.com/user-attachments/assets/8a4270db-2a08-46da-87e4-24df3ffa556b">
-<img width="301" src="https://github.com/user-attachments/assets/ff1874e3-8f6a-48ab-af6f-6baa332f9027">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 40 36" src="https://github.com/user-attachments/assets/8a4270db-2a08-46da-87e4-24df3ffa556b">
+<img width="301" alt="스크린샷 2024-10-22 오후 3 40 36" src="https://github.com/user-attachments/assets/ff1874e3-8f6a-48ab-af6f-6baa332f9027">
 
 
 <h4>2️⃣기능 2: 메인홈</h4>
-<img width="658" alt="스크린샷 2024-10-22 오후 3 40 36" src="https://github.com/user-attachments/assets/e5a28d23-1868-474b-a746-d05f1aa0acbc">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 40 36" src="https://github.com/user-attachments/assets/1f64fe75-8601-422c-840b-223b11e99fb9">
+
 
 <h4>3️⃣기능 3: 커뮤니티 기능</h4>
-<img width="844" alt="스크린샷 2024-10-22 오후 3 41 01" src="https://github.com/user-attachments/assets/9e85f370-7b3c-444c-8872-2f65451a6e68">
-<img width="807" alt="스크린샷 2024-10-22 오후 3 41 29" src="https://github.com/user-attachments/assets/c75dd66e-73ce-4d62-9ec5-677e1febe653">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 40 36" src="https://github.com/user-attachments/assets/6c796d2b-a7e3-4522-b121-1813868c6893">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 41 01" src="https://github.com/user-attachments/assets/45bc9949-c44c-48db-b68b-0a1cd9a0f551">
 
 
 <h4>4️⃣기능 4: 병원 안내 및 리뷰</h4>
-<img width="675" alt="스크린샷 2024-10-22 오후 3 43 57" src="https://github.com/user-attachments/assets/35ec9888-a050-4f8e-9e74-5baabd8565ab">
-<img width="939" alt="스크린샷 2024-10-22 오후 3 43 31" src="https://github.com/user-attachments/assets/0d8fb7ab-47fb-43e5-930e-e28e6a457bae">
-<img width="921" alt="스크린샷 2024-10-22 오후 3 43 43" src="https://github.com/user-attachments/assets/63579442-3382-411d-aeef-6f1ab6f11e7b">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 43 57" src="https://github.com/user-attachments/assets/245b2056-5f71-4215-bfef-e5dd1cbc153b">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 43 31" src="https://github.com/user-attachments/assets/44257804-7f2f-4c62-a802-a30bc79d0767">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 43 43" src="https://github.com/user-attachments/assets/04339426-b0e4-4468-abd2-1c300453e72b">
 
 
 <h4>5️⃣기능 5: 약 안내 및 리뷰</h4>
-<img width="929" alt="스크린샷 2024-10-22 오후 3 45 08" src="https://github.com/user-attachments/assets/75e2b1f5-9e4f-48a1-bd59-bbebd6c28f93">
-<img width="622" alt="스크린샷 2024-10-22 오후 3 45 30" src="https://github.com/user-attachments/assets/557ff9dc-e3f5-4fc3-ac40-9e96a2b64f45">
-<img width="917" alt="스크린샷 2024-10-22 오후 3 45 48" src="https://github.com/user-attachments/assets/059a9716-4c44-4de7-891d-5ed837610f93">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 45 08" src="https://github.com/user-attachments/assets/ab3d5f3e-97f6-483f-bd99-1f445445833e">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 45 30" src="https://github.com/user-attachments/assets/82c392d8-2e0b-48f6-9b3c-65b9113fd82f">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 45 48" src="https://github.com/user-attachments/assets/d4d1f85f-bf26-4227-bb02-0624425ad57e">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 45 48" src="https://github.com/user-attachments/assets/b256f76a-fcdb-468a-aa32-044598e4e9f1">
 
 
 <h4>6️⃣기능 6 : 마이페이지</h4>
-<img width="356" alt="스크린샷 2024-10-22 오후 3 46 08" src="https://github.com/user-attachments/assets/46e47836-58e1-4f86-ab5d-46f52e1de4c4">
-<img width="765" alt="스크린샷 2024-10-22 오후 3 46 23" src="https://github.com/user-attachments/assets/ff34c139-1bbd-450a-a055-c3f23d25a162">
-<img width="788" alt="스크린샷 2024-10-22 오후 3 46 35" src="https://github.com/user-attachments/assets/1098834e-0797-4ff7-8400-6ab5a2611650">
-<img width="871" alt="스크린샷 2024-10-22 오후 3 46 50" src="https://github.com/user-attachments/assets/585ecf09-9cdf-4d9d-b48d-6795d82fdc98">
-<img width="893" alt="스크린샷 2024-10-22 오후 3 47 04" src="https://github.com/user-attachments/assets/9146f928-3518-46fb-842c-f0358098ead4">
-
+<img width="300" alt="스크린샷 2024-10-22 오후 3 46 08" src="https://github.com/user-attachments/assets/2a28a957-ef56-4836-af93-1353b076701c">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 46 23" src="https://github.com/user-attachments/assets/7bcd6b06-5f2c-401a-976f-63c52b05dfc3">
+<img width="300" alt="스크린샷 2024-10-22 오후 3 46 35" src="https://github.com/user-attachments/assets/8151d29b-eed0-451f-86e5-150de4016abc">
 
 
 <h3>👥 팀원 및 역할 (Team Members & Roles)</h3>
@@ -80,6 +79,10 @@ ADHD를 잘 이해하고 치료하는 병원을 찾아보고,<br />
     <tr>
       <td align="center"><b>이서현</b></td>
       <td align="center">API & DB 설계, 게시글 탭, 메인 홈, 약 탭 작업</td>
+    </tr>
+    <tr>
+      <td align="center"><b>김진용</b></td>
+      <td align="center">유지보수</td>
     </tr>
   </tbody>
 </table>
